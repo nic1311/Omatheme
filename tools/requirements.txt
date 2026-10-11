@@ -1,0 +1,5 @@
+# Python 3.11+ (tomllib)
+pillow>=10.0
+numpy>=1.26
+# Only for tools/verify.py's Material You seed check (optional):
+# materialyoucolor>=3.0

@@ -1,0 +1,36 @@
+# Omarchy's starship prompt, for Termux.
+# Source: https://github.com/basecamp/omarchy  (config/starship.toml, MIT, (c) David Heinemeier Hansson)
+# Differences from upstream: the git ahead/behind arrows U+21E1/U+21E3/U+21D5 are replaced by
+# U+2191/U+2193/U+2195 because JetBrainsMono Nerd Font Mono has no glyphs for the originals.
+add_newline = true
+command_timeout = 200
+format = "[$directory$git_branch$git_status]($style)$character"
+
+[character]
+error_symbol = "[✗](bold cyan)"
+success_symbol = "[❯](bold cyan)"
+
+[directory]
+truncation_length = 2
+truncation_symbol = "…/"
+repo_root_style = "bold cyan"
+repo_root_format = "[$repo_root]($repo_root_style)[$path]($style)[$read_only]($read_only_style) "
+
+[git_branch]
+format = "[$branch]($style) "
+style = "italic cyan"
+
+[git_status]
+format     = '[$all_status]($style)'
+style      = "cyan"
+ahead      = "↑${count} "
+diverged   = "↕↑${ahead_count}↓${behind_count} "
+behind     = "↓${count} "
+conflicted = " "
+up_to_date = " "
+untracked  = "? "
+modified   = " "
+stashed    = ""
+staged     = ""
+renamed    = ""
+deleted    = ""
