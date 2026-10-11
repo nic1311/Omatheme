@@ -128,7 +128,7 @@ def _pinks(p: Palette) -> tuple[float, float]:
 
     The hot pink sits where Omarchy's own Tokyo Night pink does (its lock screen glow, #ff54d6, is about
     60% of the way from bright_magenta to bright_red), so the sunsets read pink and magenta, never red
-    or orange: those palette colors are terminal colors, not part of the desktop look.
+    or orange: Omarchy's desktop shell keeps red for alerts and errors, and orange for the terminal.
     """
     h_violet, h_red = hue_of(p["bright_magenta"]), hue_of(p["bright_red"])
     return hue_lerp(h_violet, h_red, 0.40), hue_lerp(h_violet, h_red, 0.60)
@@ -369,7 +369,7 @@ def palette_card(p: Palette, w: int = 1080, h: int = 2340) -> Image.Image:
 
     The desktop look (surfaces, text, accents) gets large tiles. The rest of the terminal palette
     (red, orange, yellow, green, brown) gets small ones under its own heading: Omarchy uses those for
-    terminal output such as errors and git diffs, not for the look of the desktop. Every color appears
+    terminal output, and its desktop shell uses red only for alerts and errors (shell.toml.tpl). Every color appears
     once; keys that repeat another key's value (Tokyo Night's ``blue`` equals its ``accent``) are shown
     under the first name only.
     """
@@ -381,7 +381,7 @@ def palette_card(p: Palette, w: int = 1080, h: int = 2340) -> Image.Image:
         ("accents", ["accent", "blue", "bright_blue", "magenta", "bright_magenta", "cyan", "bright_cyan"],
          2, 108, None),
         ("terminal colors", ["red", "bright_red", "orange", "brown", "yellow", "bright_yellow", "green",
-                             "bright_green"], 4, 76, "terminal output only (errors, git diffs), not the desktop look"),
+                             "bright_green"], 4, 76, "terminal output; the shell uses red only for alerts"),
     ]
     known = {k for _, ks, *_ in groups for k in ks}
     groups.append(("other", [k for k in p if k not in known], 4, 76, None))
@@ -512,7 +512,7 @@ def kwgt_mockup(p: Palette, w: int = 1080, h: int = 2340, background: Image.Imag
     tile(left, 614, right, 790, p["muted"])
     d.text((left + 26, 668), p.name, font=_font("Bold", 40), fill=p["bright_foreground"], anchor="lm")
     d.text((left + 26, 722), "omarchy colors", font=label, fill=p["dark_foreground"], anchor="lm")
-    # the desktop look's colors; red, orange and the other terminal-only colors stay off the home screen
+    # the desktop look's colors; red (alerts only on Omarchy) and the terminal colors stay off the strip
     swatches = ["accent", "magenta", "cyan", "bright_cyan", "muted", "bright_foreground"]
     size, gap = 52, 14
     sx = right - 26 - (len(swatches) * size + (len(swatches) - 1) * gap)

@@ -13,7 +13,7 @@ Written for **One UI 9**; most of it also applies to One UI 8.5.
 | [`wallpapers/`](wallpapers) | Four original wallpapers, 1440x3120 (exactly 4:3 of the S25's 1080x2340 panel): `dusk`, `city`, `lock` (a glowing shell prompt) and `solid` (`#1a1b26`) |
 | [`assets/tokyo-night-palette.png`](assets/tokyo-night-palette.png) | Swatch sheet of Omarchy's exact palette, sized for the phone |
 | [`docs/theme-park.md`](docs/theme-park.md) | The Tokyo Night hex value for each Good Lock → Theme Park control |
-| [`docs/kwgt.md`](docs/kwgt.md) | Build-by-hand recipe for a Waybar-style bar and bordered tiles on the home screen, in JetBrains Mono (free KWGT, no launcher change) |
+| [`docs/kwgt.md`](docs/kwgt.md) | Build-by-hand recipe for an Omarchy-style top bar and bordered tiles on the home screen, in JetBrains Mono (free KWGT, no launcher change) |
 | [`termux/`](termux) | One-command Termux setup: Tokyo Night colors, JetBrainsMono Nerd Font, Omarchy's own tmux, starship and shell config |
 | [`tools/`](tools) | The generator that rebuilds all of it from Omarchy's `colors.toml`, and a checker |
 
@@ -26,7 +26,7 @@ Written for **One UI 9**; most of it also applies to One UI 8.5.
 | Tiled windows | ◐ two tiles with Samsung split screen or app pairs; tmux panes in Termux. No tiling window manager is installable from the stores |
 | Search-driven launcher | ◐ Samsung Finder above the dock (a One UI 9 option) |
 | Square, thin-bordered tiles | ◐ KWGT tiles on the home screen; experimental Theme Park icon plates |
-| Waybar-style top bar | ◐ a KWGT widget on the home screen only; the real status bar can't be restyled |
+| Omarchy's top bar | ◐ a KWGT widget on the home screen only; the real status bar can't be restyled |
 
 Why, with sources: [docs/limits.md](docs/limits.md). Element-by-element: [docs/omarchy-mapping.md](docs/omarchy-mapping.md).
 

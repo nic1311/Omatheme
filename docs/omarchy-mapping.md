@@ -6,6 +6,7 @@ Omarchy files are in <https://github.com/basecamp/omarchy> (master, read on 2026
 | Omarchy | Where it comes from | On the S25 | |
 |---|---|---|---|
 | Palette: `#1a1b26` background, `#a9b1d6` text, `#7aa2f7` accent, ... | `themes/tokyo-night/colors.toml` | exact hex values in Theme Park, Termux and the wallpapers | ✅ |
+| Desktop shell colors: `background` surfaces, `foreground` text, `accent` window border and selection; `red` only for modules calling attention (alerts, updates, recording) and wrong-password errors | `default/themed/shell.toml.tpl`, `hyprland.lua.tpl` | wallpapers and KWGT in navy, blue, violet and pink; Theme Park home badges in `red` | ◐ |
 | Terminal colors (ANSI black = background, white = foreground, bright black = muted) | `default/themed/alacritty.toml.tpl` | `termux/colors.properties`, same slot mapping | ✅ |
 | Font: JetBrainsMono Nerd Font, size 9 | `config/alacritty/alacritty.toml`, `config/ghostty/config` | Termux, using the Nerd Font **Mono** variant (fixed cell grid); KWGT widgets can use the same file | ✅ in Termux · ◐ in KWGT widgets · ❌ system-wide |
 | Steady block cursor | `config/ghostty/config` | `termux.properties` | ✅ |

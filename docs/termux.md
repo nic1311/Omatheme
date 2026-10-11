@@ -71,4 +71,5 @@ notes app. Terminal in one tile, any app in the other, tmux panes inside the ter
 
 - **btop**: Omarchy's screenshots show it, but Termux packages it only in its root repository
   (`root-packages/btop`), which holds "programs for rooted devices".
-- **Hyprland, Waybar, Walker, Mako**: desktop Wayland tools; not applicable on Android.
+- **Hyprland and the Omarchy shell** (its bar, launcher and notifications): desktop Wayland software;
+  not applicable on Android.

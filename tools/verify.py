@@ -29,9 +29,10 @@ HOME_ZONES = {"status bar": (0.0, 0.036), "icon grid": (0.12, 0.78), "dock": (0.
 LOCK_ZONES = {"status bar": (0.0, 0.036), "clock + notifications": (0.04, 0.50)}
 ZONES = {"dusk": HOME_ZONES, "city": HOME_ZONES, "solid": HOME_ZONES, "lock": LOCK_ZONES}
 
-# Omarchy's Tokyo Night desktop is navy, blue, violet and pink; red, orange and coral are only terminal
-# colors. A seed in this HCT hue band (with real chroma) would let One UI offer a red palette, so it fails.
-# Pinks and magentas, such as Omarchy's own lock-screen glow #ff54d6 (hue 343), stay below 350.
+# Omarchy's Tokyo Night desktop is navy, blue, violet and pink; its shell uses red only for alerts and
+# errors, and orange only in the terminal. A seed in this HCT hue band (with real chroma) would let One UI
+# offer a red palette, so it fails. Pinks and magentas, such as Omarchy's own lock-screen glow #ff54d6
+# (hue 343), stay below 350.
 RED_HUES = (350.0, 50.0)  # wraps through 0
 RED_MIN_CHROMA = 20.0
 

@@ -35,7 +35,7 @@ _Research current as of 2026-10-11. Samsung changes these things often._
   the Z TriFold, not the S25 ([Samsung](https://www.samsung.com/us/support/answer/ANS10001955/)).
 - Substitute: tmux panes inside Termux.
 
-### A Waybar-style top bar
+### An Omarchy-style top bar
 
 One UI does not let you rearrange the status bar by itself. Good Lock's QuickStar can hide status icons and,
 per a third-party guide, move the clock to the right
@@ -94,7 +94,7 @@ Replacing One UI Home with a store launcher was researched and left out of the k
 - Wallpapers (`tools/verify.py`): exact 1440x3120, white-text contrast over typical icon-grid, dock and
   status-bar zones, and Material You seed extraction after the same 112x112-area downscale Android's
   `WallpaperColors` applies (still a proxy; see below). It fails if any seed is red, coral or orange: Omarchy's
-  Tokyo Night desktop is navy, blue, violet and pink, and its reds are only terminal colors.
+  Tokyo Night desktop is navy, blue, violet and pink, and its shell uses red only for alerts and errors.
 
 ## Not verified
 

@@ -8,7 +8,7 @@ KWGT (search "KWGT Kustom Widget Maker" in Google Play) draws widgets from shape
 a font you supply. Widgets sit on One UI Home, so **you keep your launcher**. This recipe builds an
 Omarchy-style bar and bordered tiles in JetBrains Mono.
 
-**What you get:** a Waybar-style bar and Hyprland-style tiles on the home screen, text in JetBrains Mono.
+**What you get:** an Omarchy-style top bar and Hyprland-style tiles on the home screen, text in JetBrains Mono.
 **What you don't:** a real status bar (the system one stays above it), anything inside apps, or Samsung's font
 anywhere else. The widgets live on one home page.
 
@@ -90,8 +90,8 @@ formula `$if(bi(charging)=1, Always, Never)$`, which shows only while charging
 `#9ece6a` one on top whose width is a formula of the battery level. If you find Kustom's Progress layer, use that.
 
 **Palette tile** (4x1, border `#414868`): `tokyo-night` in `#c0caf5` bold, `omarchy colors` in `#565f89`, and six
-small squares in the desktop colors: `#7aa2f7`, `#ad8ee6`, `#449dab`, `#0db9d7`, `#414868`, `#c0caf5`. (Red, orange
-and yellow are Omarchy's terminal colors, not part of its desktop look.)
+small squares in the desktop colors: `#7aa2f7`, `#ad8ee6`, `#449dab`, `#0db9d7`, `#414868`, `#c0caf5`. (Omarchy's
+shell uses red only for alerts and errors; orange and yellow are terminal colors.)
 
 ## 4. Notes
 

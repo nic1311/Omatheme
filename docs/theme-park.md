@@ -50,7 +50,7 @@ every value on the phone.
 | Icon label color | `#a9b1d6` | `foreground` |
 | Effects (emboss, shadow, gradient) | none | Omarchy is flat |
 | Shape | the squarest option | Omarchy's windows have square corners |
-| Home badge color (One UI 8.5+) | `#7aa2f7` | `accent`: Omarchy's red is a terminal color (errors), not part of the desktop look |
+| Home badge color (One UI 8.5+) | `#f7768e` | `red`: Omarchy's bar uses it for modules calling attention, such as alerts and updates (`default/themed/shell.toml.tpl`, `[bar] active`) |
 
 ## Keyboard and volume panel
 
