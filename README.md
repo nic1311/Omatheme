@@ -13,6 +13,7 @@ Written for **One UI 9**; most of it also applies to One UI 8.5.
 | [`wallpapers/`](wallpapers) | Four original wallpapers, 1440x3120 (exactly 4:3 of the S25's 1080x2340 panel): `dusk`, `city`, `lock` (a glowing shell prompt) and `solid` (`#1a1b26`) |
 | [`assets/tokyo-night-palette.png`](assets/tokyo-night-palette.png) | Swatch sheet of Omarchy's exact palette, sized for the phone |
 | [`docs/theme-park.md`](docs/theme-park.md) | The Tokyo Night hex value for each Good Lock → Theme Park control |
+| [`docs/kwgt.md`](docs/kwgt.md) | Build-by-hand recipe for a Waybar-style bar and bordered tiles on the home screen, in JetBrains Mono (free KWGT, no launcher change) |
 | [`termux/`](termux) | One-command Termux setup: Tokyo Night colors, JetBrainsMono Nerd Font, Omarchy's own tmux, starship and shell config |
 | [`tools/`](tools) | The generator that rebuilds all of it from Omarchy's `colors.toml`, and a checker |
 
@@ -21,11 +22,11 @@ Written for **One UI 9**; most of it also applies to One UI 8.5.
 | Omarchy trait | On the S25 |
 |---|---|
 | Tokyo Night colors | ✅ wallpaper + One UI *Color palette* + Theme Park manual colors |
-| JetBrains Mono everywhere | ❌ system-wide: Samsung's March 2026 patch only accepts Galaxy-Store-signed fonts, and the workarounds are APK-only. ✅ in Termux (same font family as Omarchy's terminals) |
+| JetBrains Mono everywhere | ❌ system-wide: Samsung's March 2026 patch only accepts Galaxy-Store-signed fonts, and the workarounds are APK-only. ✅ in Termux (same font family as Omarchy's terminals), ◐ in KWGT widgets on the home screen |
 | Tiled windows | ◐ two tiles with Samsung split screen or app pairs; tmux panes in Termux. No tiling window manager is installable from the stores |
 | Search-driven launcher | ◐ Samsung Finder above the dock (a One UI 9 option) |
-| Square, thin-bordered tiles | ◐ experimental Theme Park icon plates |
-| Waybar-style top bar | ❌ |
+| Square, thin-bordered tiles | ◐ KWGT tiles on the home screen; experimental Theme Park icon plates |
+| Waybar-style top bar | ◐ a KWGT widget on the home screen only; the real status bar can't be restyled |
 
 Why, with sources: [docs/limits.md](docs/limits.md). Element-by-element: [docs/omarchy-mapping.md](docs/omarchy-mapping.md).
 
@@ -94,6 +95,12 @@ Close and reopen Termux and type `t`. Details, undo and troubleshooting: [docs/t
   app. In split view, the divider handle offers to add the pair to your Home screen as an app pair (wording
   varies by version).
 - **More tiles:** inside Termux, tmux panes. The **PFX** key is Ctrl+Space, then `h` / `v` split and `x` closes.
+
+### 6. Home screen bar and tiles (optional, Google Play)
+
+Install **KWGT** (Kustom Widget Maker), run `bash termux/setup.sh --export-font` in Termux to hand the font over,
+and build the widgets from [docs/kwgt.md](docs/kwgt.md). Your launcher stays One UI Home. Building from scratch is
+free; there is no preset file because importing one needs Kustom's paid Pro key.
 
 ## Rebuilding the assets
 

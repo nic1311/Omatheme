@@ -2,11 +2,12 @@
 """Regenerate every theme asset from an Omarchy colors.toml.
 
     python tools/generate.py                       # Tokyo Night, everything
-    python tools/generate.py --only wallpapers     # or: palette, termux, frames, preview
+    python tools/generate.py --only wallpapers     # or: palette, termux, frames, mockup, preview
     python tools/generate.py --scene dusk          # just one wallpaper (dusk, city, lock, solid)
     python tools/generate.py --theme path/to/colors.toml
 
-Outputs (relative to the repo root): wallpapers/, assets/, termux/colors.properties, docs/preview.jpg.
+Outputs (relative to the repo root): wallpapers/, assets/, termux/colors.properties, docs/preview.jpg,
+docs/kwgt-mockup.png.
 """
 from __future__ import annotations
 
@@ -19,7 +20,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from PIL import Image, ImageDraw  # noqa: E402
 
 from omatheme.palette import load_palette  # noqa: E402
-from omatheme.scenes import SCENES, _font, palette_card, tile_frame  # noqa: E402
+from omatheme.scenes import SCENES, _font, kwgt_mockup, palette_card, tile_frame  # noqa: E402
 from omatheme.termux_kit import colors_properties  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -59,7 +60,7 @@ def make_preview(paths: list[Path], out: Path, height: int = 900) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--theme", default=str(ROOT / "themes" / "tokyo-night" / "colors.toml"))
-    parser.add_argument("--only", choices=("wallpapers", "palette", "termux", "frames", "preview"))
+    parser.add_argument("--only", choices=("wallpapers", "palette", "termux", "frames", "mockup", "preview"))
     parser.add_argument("--scene", choices=WALLPAPER_SCENES, action="append",
                         help="render only this wallpaper (repeatable); implies --only wallpapers")
     args = parser.parse_args()
@@ -83,6 +84,9 @@ def main() -> None:
         print("theme park icon plates (experimental)")
         save_png(tile_frame(palette, focused=False), ROOT / "assets" / "theme-park" / f"{name}-tile.png")
         save_png(tile_frame(palette, focused=True), ROOT / "assets" / "theme-park" / f"{name}-tile-focused.png")
+    if want("mockup"):
+        print("kwgt mock-up")
+        save_png(kwgt_mockup(palette), ROOT / "docs" / "kwgt-mockup.png")
     if want("termux"):
         out = ROOT / "termux" / "colors.properties"
         out.write_text(colors_properties(palette), encoding="utf-8")

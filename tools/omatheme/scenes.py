@@ -412,6 +412,69 @@ def tile_frame(p: Palette, focused: bool, size: int = 512) -> Image.Image:
     return img
 
 
+def _chevron(d: ImageDraw.ImageDraw, x: float, y: float, height: float, fill) -> None:
+    """A prompt chevron centered vertically on ``y`` (the font subset used here has no U+276F)."""
+    t = height * 0.30
+    d.polygon([(x, y - height / 2), (x + t, y - height / 2), (x + height * 0.62, y),
+               (x + t, y + height / 2), (x, y + height / 2), (x + height * 0.32, y)], fill=fill)
+
+
+def kwgt_mockup(p: Palette, w: int = 1080, h: int = 2340) -> Image.Image:
+    """Mock-up (not a screenshot) of the home screen built in docs/kwgt.md: bar and tiles over `dusk`."""
+    img = dusk(p).resize((w, h), Image.LANCZOS)
+    d = ImageDraw.Draw(img)
+    margin, bw = 36, 4
+    left, right = margin, w - margin
+
+    def tile(x0, y0, x1, y1, border):
+        d.rectangle([x0, y0, x1 - 1, y1 - 1], fill=p["background"], outline=border, width=bw)
+
+    # top bar: workspace-style numbers, centered clock, battery (as in Omarchy's Waybar)
+    d.rectangle([left, 132, right - 1, 211], fill=p["background"])
+    num = _font("Bold", 34)
+    d.text((left + 26, 172), "1", font=num, fill=p["accent"], anchor="lm")
+    rest_x = left + 26 + d.textlength("1 ", font=num)
+    d.text((rest_x, 172), "2 3 4 5", font=num, fill=p["dark_foreground"], anchor="lm")
+    d.text((w / 2, 172), "Sat 20:25", font=_font("Bold", 38), fill=p["bright_foreground"], anchor="mm")
+    d.text((right - 26, 172), "85%", font=num, fill=p["foreground"], anchor="rm")
+
+    # focused tile: a prompt and the clock
+    tile(left, 250, 540, 590, p["accent"])
+    small, label = _font("Regular", 30), _font("Regular", 28)
+    x = left + 26
+    d.text((x, 296), "~", font=small, fill=p["accent"], anchor="lm")
+    x += d.textlength("~ ", font=small)
+    _chevron(d, x, 296, 26, p["bright_cyan"])
+    d.text((x + 40, 296), "date", font=small, fill=p["foreground"], anchor="lm")
+    d.text((left + 26, 410), "20:25", font=_font("Bold", 112), fill=p["bright_foreground"], anchor="lm")
+    d.text((left + 26, 525), "Saturday 11 Oct", font=small, fill=p["foreground"], anchor="lm")
+
+    # battery tile
+    x0 = 564
+    tile(x0, 250, right, 590, p["muted"])
+    d.text((x0 + 26, 296), "bat", font=label, fill=p["dark_foreground"], anchor="lm")
+    d.text((x0 + 26, 400), "85%", font=_font("Bold", 96), fill=p["green"], anchor="lm")
+    track = (x0 + 26, 468, right - 26, 494)
+    d.rectangle(track, fill=p["selection"])
+    d.rectangle((track[0], track[1], track[0] + (track[2] - track[0]) * 0.85, track[3]), fill=p["green"])
+    d.text((x0 + 26, 535), "discharging", font=label, fill=p["foreground"], anchor="lm")
+
+    # palette tile
+    tile(left, 614, right, 790, p["muted"])
+    d.text((left + 26, 668), p.name, font=_font("Bold", 40), fill=p["bright_foreground"], anchor="lm")
+    d.text((left + 26, 722), "omarchy colors", font=label, fill=p["dark_foreground"], anchor="lm")
+    swatches = ["red", "yellow", "green", "cyan", "blue", "magenta", "bright_foreground"]
+    size, gap = 52, 14
+    sx = right - 26 - (len(swatches) * size + (len(swatches) - 1) * gap)
+    for i, key in enumerate(swatches):
+        d.rectangle([sx + i * (size + gap), 676, sx + i * (size + gap) + size - 1, 727], fill=p[key])
+
+    note = _font("Regular", 24)
+    caption = "mock-up, not a screenshot: app icons omitted"
+    d.text((w / 2, h - 52), caption, font=note, fill=p["dark_foreground"], anchor="mm")
+    return img
+
+
 SCENES = {
     "solid": solid,
     "lock": lock,

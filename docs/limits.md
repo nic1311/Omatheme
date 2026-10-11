@@ -43,6 +43,31 @@ per a third-party guide, move the clock to the right
 centered-clock option, which is what Omarchy's bar has, and I could not confirm QuickStar's status on One UI 9.
 Not attempted.
 
+- Substitute: a KWGT widget under the status bar ([kwgt.md](kwgt.md)). It sits on the home screen only; the
+  real status bar stays above it and nothing appears inside apps.
+
+## Launchers
+
+Replacing One UI Home with a store launcher was researched and left out of the kit. What I found:
+
+- **Lawnchair** (Google Play) is the one that could help. Its source has an "Add fonts" option ("OTF and TTF
+  fonts are supported", labelled experimental, "some text remains unchanged") and icon shapes including
+  "Square" and "Sharp square"; I read both in the 15-dev and 16 branches of
+  [its repo](https://github.com/LawnchairLauncher/lawnchair). Costs: it replaces One UI Home, so Home Up and
+  other One UI Home customizations stop applying; its README says the Play build "may be restricted" without
+  saying how; Lawnchair 16 is still in development; and I could not confirm Android 17 / One UI 9 support.
+- **Gestures.** Samsung said One UI 2.5 would support gesture navigation on third-party launchers
+  ([Pocketnow](https://pocketnow.com/one-ui-2-5-will-allow-samsung-users-to-use-gesture-navigation-on-third-party-launchers));
+  I found no current confirmation for One UI 8 or 9, so test before relying on it.
+- **Others.** Nova is limited to the system font, and Niagara's fonts sit behind its paid tier, according to
+  [a review](https://www.androidauthority.com/lawnchair-vs-nova-launcher-3597675/). Kvaesitso is not on Google
+  Play ([Android Authority](https://www.androidauthority.com/kvaesitso-launcher-hands-on-3709677/)).
+- **KLWP** (Kustom's live wallpaper) touch actions reportedly don't work on stock One UI Home, though they do
+  on ADW and Nova ([thread](https://forum.kustom.rocks/t/touch-not-working-samsung-fold-one-ui/8155)).
+- **Windows.** No launcher tiles app windows. Taskbar (Google Play) can open freeform windows, but AppBrain
+  lists its last update as October 2024 ([AppBrain](https://www.appbrain.com/app/com.farmerbb.taskbar)) and I
+  found nothing showing it works on One UI 9.
+
 ## Verified (in a cloud sandbox, 2026-10-11)
 
 - Palette bytes match Omarchy's repo (`themes/tokyo-night/colors.toml`, fetched with curl).
@@ -56,7 +81,10 @@ Not attempted.
 - `termux/tmux.conf` loads in a real tmux (3.4 here). The only rejected option is `extended-keys-format`,
   added in tmux 3.5; Termux ships 3.8.
 - `termux/setup.sh`: shellcheck-clean; install, re-run, backup, uninstall and guard behavior tested in a
-  throwaway home directory with a stubbed `pkg` and the real font download.
+  throwaway home directory with a stubbed `pkg` and the real font download. `--export-font` was tested for
+  a missing font, granted storage, a delayed permission grant and a refused one.
+- Kustom (from its docs and forum): the `Kustom/fonts` folder rule, the `$df()`, `$bi()` and `$if()` forms used in
+  [kwgt.md](kwgt.md), and that free KWGT can build a widget from scratch.
 - Wallpapers (`tools/verify.py`): exact 1440x3120, white-text contrast over typical icon-grid, dock and
   status-bar zones, and Material You seed extraction (a proxy; see below).
 
@@ -70,3 +98,6 @@ Not attempted.
 - **Zone positions** (icon grid 12-78% of the height, dock below 88%) are typical One UI home layouts, not
   measurements of yours.
 - **The square-plate trick** for Theme Park icons (see [theme-park.md](theme-park.md)).
+- **KWGT in practice.** Its option names for shapes and text, how the widgets render on One UI 9's Home, and that
+  `docs/kwgt-mockup.png` (generated from the palette, not captured from a phone) matches what KWGT draws.
+- **Lawnchair on the Play Store**: which features that build restricts, and gesture navigation with it.

@@ -4,6 +4,7 @@
 #   bash termux/setup.sh              install (safe to re-run)
 #   bash termux/setup.sh --nvim       also install Neovim with the tokyonight-night colorscheme
 #   bash termux/setup.sh --uninstall  remove what this script installed
+#   bash termux/setup.sh --export-font  copy the font to Downloads/Omatheme, for widget and launcher apps
 #
 # Existing files are backed up to ~/.omatheme-backup/<timestamp>/ before being replaced.
 set -euo pipefail
@@ -20,11 +21,13 @@ rc="$HOME/.bashrc"
 
 with_nvim=0
 uninstall=0
+export_font=0
 for arg in "$@"; do
   case "$arg" in
     --nvim) with_nvim=1 ;;
     --uninstall) uninstall=1 ;;
-    -h | --help) sed -n '2,8p' "${BASH_SOURCE[0]}"; exit 0 ;;
+    --export-font) export_font=1 ;;
+    -h | --help) sed -n '2,9p' "${BASH_SOURCE[0]}"; exit 0 ;;
     *) echo "unknown option: $arg (try --help)" >&2; exit 2 ;;
   esac
 done
@@ -78,6 +81,37 @@ reload() {
   if command -v termux-reload-settings &>/dev/null; then termux-reload-settings || true; fi
 }
 
+STORAGE_WAIT="${OMATHEME_STORAGE_WAIT:-30}" # seconds to wait for Android's storage permission dialog
+
+export_font_to_downloads() { # copy the installed font where launcher and widget apps can pick it
+  local font="$HOME/.termux/font.ttf" downloads="$HOME/storage/downloads" waited=0
+  local dest="$downloads/Omatheme/JetBrainsMonoNerdFontMono-Regular.ttf"
+  if [[ ! -f "$font" ]]; then
+    warn "No font at $font yet. Run: bash termux/setup.sh"
+    return 1
+  fi
+  if [[ ! -d "$downloads" ]]; then
+    say "Asking Android for storage access: tap Allow in the dialog"
+    termux-setup-storage || true
+    while [[ ! -d "$downloads" && $waited -lt $STORAGE_WAIT ]]; do
+      sleep 1
+      waited=$((waited + 1))
+    done
+  fi
+  if [[ ! -d "$downloads" ]]; then
+    warn "No storage access yet. Allow it (termux-setup-storage), then run: bash termux/setup.sh --export-font"
+    return 1
+  fi
+  mkdir -p "$(dirname "$dest")"
+  cp -f "$font" "$dest"
+  say "Copied the font to Downloads/Omatheme/ (in My Files: Downloads > Omatheme)"
+}
+
+if ((export_font)); then
+  export_font_to_downloads || exit 1
+  exit 0
+fi
+
 if ((uninstall)); then
   say "Removing the shell hook from $rc"
   strip_bashrc_block
@@ -90,7 +124,7 @@ if ((uninstall)); then
   done
   if [[ -e "$NVIM_DST" ]] && cmp -s "$here/nvim-init.lua" "$NVIM_DST"; then rm -f "$NVIM_DST"; say "removed $NVIM_DST"; fi
   reload
-  say "Done. Kept ~/.termux/font.ttf (delete it to go back to the default font) and any backups in ~/.omatheme-backup."
+  say "Done. Kept ~/.termux/font.ttf (delete it to go back to the default font), any backups in ~/.omatheme-backup, and Downloads/Omatheme if you exported the font."
   exit 0
 fi
 
