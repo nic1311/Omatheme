@@ -62,6 +62,12 @@ def hue_of(color) -> float:
     return float(np.degrees(np.arctan2(b, a)) % 360)
 
 
+def hue_lerp(a: float, b: float, t: float) -> float:
+    """Interpolate between two hues (degrees) along the shorter arc of the color wheel."""
+    d = (b - a + 180.0) % 360.0 - 180.0
+    return (a + d * t) % 360.0
+
+
 def tint(color, L: float | None = None, C: float | None = None, hue: float | None = None) -> np.ndarray:
     """Re-light a color in OKLCH: keep its hue (a palette identity), set lightness/chroma by design.
 

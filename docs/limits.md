@@ -74,19 +74,26 @@ Replacing One UI Home with a store launcher was researched and left out of the k
 - Omarchy's font and cursor settings were read from its Alacritty and Ghostty configs.
 - JetBrainsMono Nerd Font Mono: every advance is 600 units (monospace); it has `❯`, Powerline and Nerd
   icons; it lacks `⇡ ⇣ ⇕`, which `termux/starship.toml` replaces.
-- Termux package recipes exist for tmux, starship, eza, zoxide, fzf, bat, git, neovim and fastfetch
-  (not btop), at current versions (tmux 3.8, neovim 0.12).
+- Termux package recipes exist for tmux, starship, eza, zoxide, fzf, bat, git, neovim and fastfetch, at
+  current versions (tmux 3.8, neovim 0.12). btop is only in the root repository, for rooted phones.
 - `termux.properties` keys, and the `~/.termux/colors.properties` and `~/.termux/font.ttf` paths, match
   termux-app's source, including the `{macro: ...}` extra-keys syntax.
 - `termux/tmux.conf` loads in a real tmux (3.4 here). The only rejected option is `extended-keys-format`,
   added in tmux 3.5; Termux ships 3.8.
-- `termux/setup.sh`: shellcheck-clean; install, re-run, backup, uninstall and guard behavior tested in a
-  throwaway home directory with a stubbed `pkg` and the real font download. `--export-font` was tested for
-  a missing font, granted storage, a delayed permission grant and a refused one.
+- `termux/setup.sh`: shellcheck-clean; 40 checks in a throwaway home directory with a stubbed `pkg` and the
+  real font download: install over existing files, re-run, byte-for-byte restore on uninstall, edited files
+  kept, broken `.bashrc` markers refused, `--nvim`, and `--export-font` with storage granted, granted late
+  and refused.
+- `termux/omarchy.sh`, in bash with stub tools: `eff` opens the picked file in the editor and, with no editor
+  installed, refuses instead of running the file; the zoxide `cd` jump also works when `TERM=dumb`.
+- `termux/nvim-init.lua`, in Neovim 0.9.5: installs lazy.nvim and tokyonight.nvim and ends with
+  `tokyonight-night` (background `#1a1b26`); offline, it warns, starts with the default colors and retries
+  on the next start.
 - Kustom (from its docs and forum): the `Kustom/fonts` folder rule, the `$df()`, `$bi()` and `$if()` forms used in
   [kwgt.md](kwgt.md), and that free KWGT can build a widget from scratch.
 - Wallpapers (`tools/verify.py`): exact 1440x3120, white-text contrast over typical icon-grid, dock and
-  status-bar zones, and Material You seed extraction (a proxy; see below).
+  status-bar zones, and Material You seed extraction after the same 112x112-area downscale Android's
+  `WallpaperColors` applies (still a proxy; see below).
 
 ## Not verified
 

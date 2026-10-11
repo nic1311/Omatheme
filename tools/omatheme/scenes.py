@@ -11,8 +11,8 @@ from pathlib import Path
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
-from .canvas import Canvas, Shapes, blur
-from .color import gradient, hue_of, lin, tint
+from .canvas import Canvas, Shapes, blur, blur_sparse
+from .color import gradient, hue_lerp, hue_of, lin, tint
 from .palette import Palette, rgb_to_hex
 
 W, H = 1440, 3120  # 19.5:9, exact 4:3 of the S25's 1080x2340 panel; S25+/Ultra are native
@@ -133,7 +133,7 @@ def dusk(p: Palette, w: int = W, h: int = H, seed: int = 7) -> Image.Image:
     night, ink = p["background"], p["darker_background"]
     violet, rose, sun = p["bright_magenta"], p["bright_red"], p["bright_yellow"]
     h_night, h_violet, h_rose, h_sun = (hue_of(night), hue_of(violet), hue_of(rose), hue_of(sun))
-    h_pink = ((h_violet + h_rose + 360.0) / 2) % 360.0  # halfway from violet to rose
+    h_pink = hue_lerp(h_violet, h_rose, 0.5)  # halfway from violet to rose
 
     # The bright band sits below the app grid (~80% of the screen) and above the dock, so white
     # labels keep their contrast; verify.py checks this.
@@ -198,7 +198,7 @@ def city(p: Palette, w: int = W, h: int = H, seed: int = 21) -> Image.Image:
     night, ink = p["background"], p["darker_background"]
     violet, rose, sun, blue = p["bright_magenta"], p["bright_red"], p["bright_yellow"], p["blue"]
     h_night, h_violet, h_rose = hue_of(night), hue_of(violet), hue_of(rose)
-    h_pink = ((h_violet + h_rose + 360.0) / 2) % 360.0
+    h_pink = hue_lerp(h_violet, h_rose, 0.5)
 
     sky = [
         (0.00, tint(night, L=0.160, C=0.022)),
@@ -265,33 +265,38 @@ def city(p: Palette, w: int = W, h: int = H, seed: int = 21) -> Image.Image:
         ((74, 170), (0.07, 0.15), (17, 25), (0.07, 0.24), tint(night, L=0.150, C=0.035), 0.85),
     ]
     near_signs = []
+    rim_color = lin(tint(violet, L=0.36, C=0.10, hue=h_pink)).astype(np.float32)
     for li, (wr, hr, (cw, ch), (p0, p1), body, win_gain) in enumerate(layers):
+        body_lin = lin(body).astype(np.float32)
         x = -int(rng.integers(0, 40))
         while x < w + 40:
             bw = int(rng.integers(*wr))
             bh = int(rng.uniform(*hr) * h * (1.0 + 0.7 * (rng.random() < 0.09)))  # a few skyscrapers
             top = ground - bh
-            tiers = [(x, top, bw)]
-            if rng.random() < 0.35:  # setback crown
-                tiers.append((x + int(bw * 0.18), top - int(bh * 0.10), int(bw * 0.64)))
-            solid_mask = np.zeros((h, w), np.float32)
-            for tx, ty, tw in tiers:
+            tiers = [(x, top, bw, ground)]  # x, top, width, bottom
+            if rng.random() < 0.35:  # setback crown sitting on the base
+                tiers.append((x + int(bw * 0.18), top - int(bh * 0.10), int(bw * 0.64), top))
+            rims = [(tx, ty, tb) for tx, ty, _, tb in tiers]  # left edge of each tier catches the glow
+            for tx, ty, tw, tb in tiers:
                 x0, x1 = max(tx, 0), min(tx + tw, w)
                 if x1 > x0:
-                    solid_mask[max(ty, 0):ground, x0:x1] = 1.0
+                    c.px[max(ty, 0):tb, x0:x1] = body_lin
             if li == 2 and rng.random() < 0.30 and bw > 80:  # antenna with a red aviation light
                 ax, ah = x + bw // 2, int(rng.uniform(0.02, 0.05) * h)
-                solid_mask[max(top - ah, 0):top, max(ax - 2, 0):ax + 2] = 1.0
+                c.px[max(top - ah, 0):top, max(ax - 2, 0):ax + 2] = body_lin
+                rims.append((ax - 2, top - ah, top))
                 emissive[max(top - ah, 0):top - ah + 7, max(ax - 4, 0):ax + 4] = lin(tint(rose, L=0.74, C=0.19))
-            c.paint(body, solid_mask)
             if li == 2:  # rim light on the side facing the horizon glow
-                rim_mask = solid_mask.copy()
-                rim_mask[:, :] = np.minimum(rim_mask, 1.0 - np.roll(solid_mask, 4, axis=1))
-                c.paint(tint(violet, L=0.36, C=0.10, hue=h_pink), rim_mask, 0.7)
-            # windows
+                for rx, ry, rb in rims:
+                    x0, x1 = max(rx, 0), min(rx + 4, w)
+                    if x1 > x0:
+                        strip = c.px[max(ry, 0):rb, x0:x1]
+                        strip *= 0.3
+                        strip += 0.7 * rim_color
+            # windows: each tier gets its own grid, limited to the tier's own height
             lit_p = rng.uniform(p0, p1)
-            for tx, ty, tw in tiers:
-                cols, rows = (tw - 16) // cw, (ground - ty - 24) // ch
+            for tx, ty, tw, tb in tiers:
+                cols, rows = (tw - 16) // cw, (tb - ty - 24) // ch
                 for r in range(max(rows, 0)):
                     for q in range(max(cols, 0)):
                         if rng.random() < lit_p:
@@ -305,7 +310,7 @@ def city(p: Palette, w: int = W, h: int = H, seed: int = 21) -> Image.Image:
         # paint this layer's windows now so nearer layers occlude them
         lit = (emissive.sum(axis=2) > 0).astype(np.float32)
         c.paint(emissive, lit)
-        c.px += blur(emissive, 5.0) * (0.55 * win_gain)
+        c.px += blur_sparse(emissive, 5.0) * (0.55 * win_gain)
         if li < 2:
             emissive[:] = 0
 
@@ -318,7 +323,7 @@ def city(p: Palette, w: int = W, h: int = H, seed: int = 21) -> Image.Image:
         sign_mask[sy_:sy_ + sh, sx_:sx_ + 12] = 1.0
         sign_col[sy_:sy_ + sh, sx_:sx_ + 12] = col
     c.paint(sign_col, sign_mask)
-    c.px += blur(sign_col * sign_mask[..., None], 10.0) * 1.1
+    c.px += blur_sparse(sign_col * sign_mask[..., None], 10.0) * 1.1
     emissive += sign_col * sign_mask[..., None]
 
     # wet street: dark ground plus streaky reflections of the near layer's lights
@@ -331,7 +336,7 @@ def city(p: Palette, w: int = W, h: int = H, seed: int = 21) -> Image.Image:
     src = ground - np.arange(1, depth + 1)
     refl = np.zeros((h, w, 3), np.float32)
     refl[ground:] = emissive[src.clip(0)]
-    refl = blur(refl, 2.5, 16.0)
+    refl = blur_sparse(refl, 2.5, 16.0)
     fade = np.exp(-(ys - ground).clip(0) / 105.0).astype(np.float32)[:, None, None]
     c.px += refl * fade * 0.30 * ground_mask[..., None]
 
@@ -347,29 +352,43 @@ def _font(weight: str, size: int) -> ImageFont.FreeTypeFont:
 
 
 def palette_card(p: Palette, w: int = 1080, h: int = 2340) -> Image.Image:
-    """A phone-sized swatch sheet: compare it against One UI's color pickers."""
-    img = Image.new("RGB", (w, h), p["background"])
-    d = ImageDraw.Draw(img)
-    pad, gap, cols = 48, 14, 2
-    d.text((pad, 70), p.name, font=_font("Bold", 64), fill=p["bright_foreground"])
-    d.text((pad, 150), "Omarchy colors.toml", font=_font("Regular", 30), fill=p["dark_foreground"])
+    """A phone-sized swatch sheet: compare it against One UI's color pickers.
 
+    Every color in the palette appears once; keys that repeat another key's value (Tokyo Night's
+    ``blue`` equals its ``accent``) are shown under the first name only.
+    """
+    pad, gap, cols, tile_h = 48, 14, 2, 108
     groups = [
         ("surfaces", ["background", "lighter_background", "dark_background", "darker_background",
                       "selection", "muted"]),
         ("text", ["foreground", "bright_foreground", "light_foreground", "dark_foreground"]),
-        ("accents", ["accent", "bright_blue", "magenta", "bright_magenta", "cyan", "bright_cyan", "green",
-                     "bright_green", "yellow", "bright_yellow", "orange", "red", "bright_red"]),
+        ("accents", ["accent", "blue", "bright_blue", "magenta", "bright_magenta", "cyan", "bright_cyan",
+                     "green", "bright_green", "yellow", "bright_yellow", "orange", "red", "bright_red"]),
     ]
     known = {k for _, ks in groups for k in ks}
-    rest = [k for k in p if k not in known and k != "blue"]
-    if rest:
-        groups.append(("other", rest))
+    groups.append(("other", [k for k in p if k not in known]))
+    seen, shown = set(), []
+    for title, keys in groups:
+        keep = []
+        for key in keys:
+            if key in p and p[key] not in seen:
+                seen.add(p[key])
+                keep.append(key)
+        if keep:
+            shown.append((title, keep))
+
+    def rows(keys):
+        return (len(keys) + cols - 1) // cols
+
+    needed = 220 + sum(52 + rows(keys) * (tile_h + gap) + 26 for _, keys in shown) + pad
+    img = Image.new("RGB", (w, max(h, needed)), p["background"])
+    d = ImageDraw.Draw(img)
+    d.text((pad, 70), p.name, font=_font("Bold", 64), fill=p["bright_foreground"])
+    d.text((pad, 150), "Omarchy colors.toml", font=_font("Regular", 30), fill=p["dark_foreground"])
 
     tile_w = (w - 2 * pad - gap * (cols - 1)) // cols
-    tile_h = 108
     y = 220
-    for title, keys in groups:
+    for title, keys in shown:
         d.text((pad, y), title, font=_font("Bold", 30), fill=p["foreground"])
         y += 52
         for i, key in enumerate(keys):
@@ -382,9 +401,7 @@ def palette_card(p: Palette, w: int = 1080, h: int = 2340) -> Image.Image:
             ink = max((p["background"], p["bright_foreground"]), key=lambda c: contrast(fill, c))
             d.text((x + 20, yy + 12), key, font=_font("Regular", 26), fill=ink)
             d.text((x + 20, yy + 48), rgb_to_hex(fill), font=_font("Bold", 44), fill=ink)
-        y += ((len(keys) + cols - 1) // cols) * (tile_h + gap) + 26
-    if y > h:
-        raise ValueError(f"palette card overflows the canvas ({y} > {h}); reduce tile_h")
+        y += rows(keys) * (tile_h + gap) + 26
     return img
 
 
@@ -419,9 +436,12 @@ def _chevron(d: ImageDraw.ImageDraw, x: float, y: float, height: float, fill) ->
                (x + t, y + height / 2), (x, y + height / 2), (x + height * 0.32, y)], fill=fill)
 
 
-def kwgt_mockup(p: Palette, w: int = 1080, h: int = 2340) -> Image.Image:
-    """Mock-up (not a screenshot) of the home screen built in docs/kwgt.md: bar and tiles over `dusk`."""
-    img = dusk(p).resize((w, h), Image.LANCZOS)
+def kwgt_mockup(p: Palette, w: int = 1080, h: int = 2340, background: Image.Image | None = None) -> Image.Image:
+    """Mock-up (not a screenshot) of the home screen built in docs/kwgt.md: bar and tiles over `dusk`.
+
+    Pass the rendered dusk wallpaper as ``background`` to avoid rendering it twice.
+    """
+    img = (dusk(p) if background is None else background).convert("RGB").resize((w, h), Image.LANCZOS)
     d = ImageDraw.Draw(img)
     margin, bw = 36, 4
     left, right = margin, w - margin

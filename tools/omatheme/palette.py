@@ -6,13 +6,13 @@ from pathlib import Path
 
 RGB = tuple[int, int, int]
 
-# Keys every scene relies on. Omarchy themes share this schema, so any theme's
-# colors.toml works; a missing key is reported up front instead of mid-render.
+# Keys the wallpapers, mock-up and Termux colors rely on. Omarchy themes share this schema, so any
+# theme's colors.toml works; a missing key is reported up front instead of mid-render. The palette
+# card shows whatever keys exist, so display-only keys (orange, lighter_background, ...) are optional.
 REQUIRED = (
-    "background", "dark_background", "darker_background", "lighter_background",
-    "foreground", "light_foreground", "bright_foreground", "dark_foreground",
-    "accent", "selection", "muted",
-    "red", "yellow", "orange", "green", "cyan", "blue", "magenta",
+    "background", "darker_background", "selection", "muted", "accent",
+    "foreground", "bright_foreground", "dark_foreground",
+    "red", "yellow", "green", "cyan", "blue", "magenta",
     "bright_red", "bright_yellow", "bright_green", "bright_cyan", "bright_blue", "bright_magenta",
 )
 
@@ -42,7 +42,7 @@ def load_palette(path: str | Path) -> Palette:
     with path.open("rb") as fh:
         raw = tomllib.load(fh)
     palette = Palette()
-    palette.name = path.parent.name
+    palette.name = path.resolve().parent.name
     for key, value in raw.items():
         if isinstance(value, str) and value.startswith("#"):
             palette[key] = hex_to_rgb(value)

@@ -98,9 +98,9 @@ Close and reopen Termux and type `t`. Details, undo and troubleshooting: [docs/t
 
 ### 6. Home screen bar and tiles (optional, Google Play)
 
-Install **KWGT** (Kustom Widget Maker), run `bash termux/setup.sh --export-font` in Termux to hand the font over,
-and build the widgets from [docs/kwgt.md](docs/kwgt.md). Your launcher stays One UI Home. Building from scratch is
-free; there is no preset file because importing one needs Kustom's paid Pro key.
+Install **KWGT** (Kustom Widget Maker), run `bash ~/Omatheme/termux/setup.sh --export-font` in Termux to save the
+font to Downloads, and build the widgets from [docs/kwgt.md](docs/kwgt.md). Your launcher stays One UI Home.
+Building from scratch is free; there is no preset file because importing one needs Kustom's paid Pro key.
 
 ## Rebuilding the assets
 
@@ -111,5 +111,7 @@ python tools/generate.py                              # wallpapers, palette shee
 pip install materialyoucolor && python tools/verify.py
 ```
 
-`tools/generate.py --theme path/to/colors.toml` accepts any Omarchy theme's `colors.toml`, though the scene
-colors were tuned for Tokyo Night. Credits and third-party licenses: [NOTICE.md](NOTICE.md).
+`tools/generate.py --theme path/to/<theme>/colors.toml` accepts any Omarchy theme's `colors.toml`, though the
+scene colors were tuned for Tokyo Night. Other themes are written to `build/<theme>/` (git-ignored, named after
+the folder that holds the file), so they never overwrite this kit; `--out DIR` picks another folder.
+Credits and third-party licenses: [NOTICE.md](NOTICE.md).

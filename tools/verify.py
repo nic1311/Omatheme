@@ -32,7 +32,12 @@ ZONES = {"dusk": HOME_ZONES, "city": HOME_ZONES, "solid": HOME_ZONES, "lock": LO
 MAX_FRACTION_BELOW_3_TO_1 = 0.02  # at most 2% of a zone may fall under WCAG's 3:1 for large text/icons
 
 
-def seeds(img: Image.Image, n: int = 4, max_side: int = 112):
+# Android's WallpaperColors shrinks the bitmap to at most this many pixels (MAX_WALLPAPER_EXTRACTION_AREA,
+# 112 x 112), keeping the aspect ratio, with Bitmap.createScaledBitmap(..., filter=false): nearest sampling.
+EXTRACTION_AREA = 112 * 112
+
+
+def seeds(img: Image.Image, n: int = 4):
     """Top-n Material seed colors as (argb, hue, chroma, tone), or None if the library is missing."""
     try:
         from materialyoucolor.hct import Hct
@@ -40,8 +45,8 @@ def seeds(img: Image.Image, n: int = 4, max_side: int = 112):
         from materialyoucolor.score.score import Score, ScoreOptions
     except ImportError:
         return None
-    scale = max_side / max(img.size)  # Android's WallpaperColors downsamples to ~112 px
-    small = img.resize((max(1, round(img.width * scale)), max(1, round(img.height * scale))), Image.BILINEAR)
+    scale = min(1.0, (EXTRACTION_AREA / (img.width * img.height)) ** 0.5)
+    small = img.resize((max(1, int(img.width * scale)), max(1, int(img.height * scale))), Image.NEAREST)
     quantized = QuantizeCelebi(np.asarray(small).reshape(-1, 3).tolist(), 128)
     out = []
     for argb in Score.score(quantized, ScoreOptions(desired=n)):
@@ -89,6 +94,7 @@ def main() -> int:
         verdict = "OK" if ok_size else "FAIL (expected 1440x3120 RGB)"
         print(f"  size      {img.size[0]}x{img.size[1]} {img.mode:4s} {verdict}")
         failed |= not ok_size
+        img = img.convert("RGB")
 
         found = seeds(img)
         if found is None:
@@ -104,7 +110,6 @@ def main() -> int:
                     else "WARN: no seed near Tokyo Night hues")
             print(f"  palette   {note}")
 
-        img = img.convert("RGB")
         for zone, (lt3, lt45, p1) in zone_stats(img, ZONES.get(scene, HOME_ZONES)).items():
             ok = lt3 <= MAX_FRACTION_BELOW_3_TO_1
             failed |= not ok

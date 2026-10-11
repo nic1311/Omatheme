@@ -19,9 +19,9 @@ without testing it in the app.
 
 ## 1. Put the font where KWGT can see it
 
-1. In Termux run `bash termux/setup.sh --export-font`, and allow storage access when Android asks. It copies
-   the font to `Downloads/Omatheme/JetBrainsMonoNerdFontMono-Regular.ttf`. (Run `bash termux/setup.sh` first
-   if you haven't; that is what downloads the font.)
+1. In Termux run `bash ~/Omatheme/termux/setup.sh --export-font`, and allow storage access when Android asks.
+   It downloads the font and saves it as `Downloads/Omatheme/JetBrainsMonoNerdFontMono-Regular.ttf`. This only
+   needs the repo cloned (the README's step 4), not the rest of the Termux kit.
 2. In KWGT, open Settings → App settings and note the main Kustom folder (pick one if it asks).
 3. In My Files, create a folder named `fonts` inside that Kustom folder and move the TTF into it.
 4. Close KWGT completely and reopen it. In the editor's font picker set the Source filter to **All**; the font

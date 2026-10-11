@@ -11,12 +11,23 @@ HISTFILESIZE="${HISTSIZE}"
 
 # Use the terminal's own (Tokyo Night) colors for bat instead of a fixed theme
 export BAT_THEME=ansi
-command -v nvim &>/dev/null && export EDITOR="${EDITOR:-nvim}"
 
-# Prompt, directory jumping and fuzzy finder (interactive shells only)
+# Editor for `eff`: keep yours, otherwise the first one installed (Omarchy always sets one)
+if [[ -z "${EDITOR:-}" ]]; then
+  for candidate in nvim vim nano vi; do
+    if command -v "$candidate" &>/dev/null; then
+      export EDITOR="$candidate"
+      break
+    fi
+  done
+fi
+
+# Directory jumping, set up unconditionally as upstream does: `cd` below relies on it
+command -v zoxide &>/dev/null && eval "$(zoxide init bash)"
+
+# Prompt and fuzzy finder (interactive shells on a real terminal only)
 if [[ $- == *i* ]] && [[ ${TERM:-} != "dumb" ]]; then
   command -v starship &>/dev/null && eval "$(starship init bash --print-full-init)"
-  command -v zoxide &>/dev/null && eval "$(zoxide init bash)"
   command -v fzf &>/dev/null && eval "$(fzf --bash)"
 fi
 
@@ -29,7 +40,20 @@ if command -v eza &>/dev/null; then
 fi
 
 alias ff="fzf --preview 'bat --style=numbers --color=always {}'"
-alias eff='$EDITOR "$(ff)"'
+
+# Open a fuzzy-found file in $EDITOR. A function, not upstream's alias: with no editor set, the alias
+# would run the chosen file instead of opening it.
+eff() {
+  if [[ -z "${EDITOR:-}" ]]; then
+    echo "eff: no editor found; set EDITOR or install one (bash ~/Omatheme/termux/setup.sh --nvim)" >&2
+    return 1
+  fi
+  local file
+  file="$(fzf --preview 'bat --style=numbers --color=always {}')" || return
+  [[ -n "$file" ]] || return
+  # shellcheck disable=SC2086  # EDITOR may carry arguments, as upstream's alias allows
+  $EDITOR "$file"
+}
 
 if command -v zoxide &>/dev/null; then
   alias cd="zd"

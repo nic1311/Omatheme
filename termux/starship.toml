@@ -2,6 +2,8 @@
 # Source: https://github.com/basecamp/omarchy  (config/starship.toml, MIT, (c) David Heinemeier Hansson)
 # Differences from upstream: the git ahead/behind arrows U+21E1/U+21E3/U+21D5 are replaced by
 # U+2191/U+2193/U+2195 because JetBrainsMono Nerd Font Mono has no glyphs for the originals.
+# Like upstream, git_status.format shows only $all_status, so the ahead, behind, diverged and up_to_date
+# symbols below never appear. To see them, change that format to '[$all_status$ahead_behind]($style)'.
 add_newline = true
 command_timeout = 200
 format = "[$directory$git_branch$git_status]($style)$character"

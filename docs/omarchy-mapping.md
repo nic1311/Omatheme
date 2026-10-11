@@ -21,5 +21,5 @@ Omarchy files are in <https://github.com/basecamp/omarchy> (master, read on 2026
 | Tiled windows | `preview.png` | Samsung split screen (two apps); tmux panes | ◐ |
 | Search-driven app launcher | n/a (not mapped to a file) | Samsung Finder, which One UI 9 lets you place above the dock | ◐ |
 | Top bar (workspace numbers, centered clock, tray) | `preview.png` | a KWGT widget on the home screen ([kwgt.md](kwgt.md)); the real status bar can't be restyled ([limits](limits.md)) | ◐ |
-| btop | `default/themed/btop.theme.tpl` | no btop recipe in the Termux repo | ❌ |
+| btop | `default/themed/btop.theme.tpl` | Termux has btop only in its root repository, for rooted phones | ❌ |
 | Keyboard backlight `ff00ff` | `themes/tokyo-night/keyboard.rgb` | no equivalent | ❌ |

@@ -45,6 +45,28 @@ def blur(a: np.ndarray, sigma: float, sigma_y: float | None = None) -> np.ndarra
     return out
 
 
+def blur_sparse(a: np.ndarray, sigma: float, sigma_y: float | None = None) -> np.ndarray:
+    """blur() computed only over the bounding box of ``a``'s non-zero pixels plus the kernel's reach.
+
+    Same result as blur() (up to float rounding) for arrays that are zero almost everywhere, such as a
+    layer of lit windows, at a fraction of the cost.
+    """
+    sigma_y = sigma if sigma_y is None else sigma_y
+    present = a if a.ndim == 2 else a.any(axis=2)
+    rows, cols = np.flatnonzero(present.any(axis=1)), np.flatnonzero(present.any(axis=0))
+    out = np.zeros(a.shape, np.float32)
+    if rows.size == 0:
+        return out
+
+    def reach(s: float) -> int:
+        return sum((size - 1) // 2 for size in _box_sizes(s)) + 1 if s > 0.3 else 0
+
+    y0, y1 = max(rows[0] - reach(sigma_y), 0), min(rows[-1] + 1 + reach(sigma_y), a.shape[0])
+    x0, x1 = max(cols[0] - reach(sigma), 0), min(cols[-1] + 1 + reach(sigma), a.shape[1])
+    out[y0:y1, x0:x1] = blur(a[y0:y1, x0:x1], sigma, sigma_y)
+    return out
+
+
 class Shapes:
     """Collect anti-aliased vector shapes into a single 0..1 coverage mask."""
 

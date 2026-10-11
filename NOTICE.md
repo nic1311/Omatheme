@@ -45,7 +45,8 @@ The palette originates from the Tokyo Night theme by enkia (`enkia.tokyo-night`)
 ## JetBrains Mono (SIL Open Font License 1.1)
 
 `tools/fonts/JetBrainsMono-*.woff` (Latin subset, via the `@fontsource/jetbrains-mono` npm package) is
-used only to set text in the generated palette sheet and preview. License: `tools/fonts/OFL.txt`.
+used only to set text in the generated palette sheet, preview and KWGT mock-up (`docs/kwgt-mockup.png`).
+License: `tools/fonts/OFL.txt`.
 
 `termux/setup.sh` downloads **JetBrainsMono Nerd Font Mono** from
 <https://github.com/ryanoasis/nerd-fonts> onto the phone at install time (MIT for the patcher, OFL for the

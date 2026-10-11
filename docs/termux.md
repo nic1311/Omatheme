@@ -20,7 +20,8 @@ shell aliases. It is also where "tiles" work for real: tmux panes.
 3. Close and reopen Termux, then type `t` to start tmux.
 
 If a command is missing or crashes after the install, run `pkg upgrade` once (Termux does not support
-partially upgraded installs) and run the script again. It is safe to re-run.
+partially upgraded installs) and run `bash ~/Omatheme/termux/setup.sh` again. It is safe to re-run.
+To pick up a newer version of this kit later: `git -C ~/Omatheme pull && bash ~/Omatheme/termux/setup.sh`.
 
 ## What the script changes
 
@@ -30,16 +31,24 @@ partially upgraded installs) and run the script again. It is safe to re-run.
 | `~/.termux/font.ttf` | downloaded | `JetBrainsMonoNerdFontMono-Regular.ttf` from the Nerd Fonts repo (about 2.5 MB), checked to be a TrueType file before use |
 | `~/.termux/termux.properties` | `termux/termux.properties` | block cursor, margins, and a **PFX** key (Ctrl+Space) in the extra-keys row |
 | `~/.config/tmux/tmux.conf` | `termux/tmux.conf` | Omarchy's, minus one Omarchy-only binding |
-| `~/.config/starship.toml` | `termux/starship.toml` | Omarchy's, with three arrow glyphs swapped for ones the font has |
-| `~/.config/omatheme/omarchy.sh` | `termux/omarchy.sh` | aliases (`ls`, `lt`, `ff`, `t`, git), zoxide, fzf, starship; sourced from a marked block in `~/.bashrc` |
+| `~/.config/starship.toml` | `termux/starship.toml` | Omarchy's, with three arrow glyphs swapped for ones the font has (like upstream, the prompt leaves them out; the file's header says how to show them) |
+| `~/.config/omatheme/omarchy.sh` | `termux/omarchy.sh` | aliases (`ls`, `lt`, `ff`, `eff`, `t`, git), zoxide, fzf, starship; sourced from a marked block in `~/.bashrc` |
 | `~/.config/nvim/init.lua` | `termux/nvim-init.lua` | only with `--nvim` |
 
 Packages installed: tmux, starship, eza, zoxide, fzf, bat, git, curl (plus neovim with `--nvim`).
-Anything it overwrites is first copied to `~/.omatheme-backup/<timestamp>/`.
+The config goes in `~/.config` even if `$XDG_CONFIG_HOME` points elsewhere, because starship and the tmux
+reload key (prefix, then `q`) only look there.
 
-**Undo:** `bash termux/setup.sh --uninstall` removes the `.bashrc` block and every file that is still
-identical to what it installed. It leaves `~/.termux/font.ttf` (delete it to return to the default font)
-and the backups.
+Before replacing a file, the script copies it to `~/.omatheme-backup/<timestamp>/` under the same path, for
+example `~/.omatheme-backup/<timestamp>/.config/tmux/tmux.conf`. Whatever was there before the very first
+install is also kept in `~/.omatheme-backup/original/`.
+
+**Undo:** `bash ~/Omatheme/termux/setup.sh --uninstall` removes the `.bashrc` block, puts back the files you
+had before the first install, and deletes the ones it created. The font goes back to yours, or to Termux's
+default if you had none. A file you changed after installing is kept, and the script tells you where your
+original is, if you had one. If the omatheme marker lines in `~/.bashrc` no longer form one begin/end pair,
+install and uninstall both stop without changing anything and say which marker lines to fix. The backups
+stay in `~/.omatheme-backup`; delete that folder when you no longer need them.
 
 ## Using it
 
@@ -48,6 +57,8 @@ and the backups.
   After the prefix: `h` split top/bottom, `v` split left/right, `x` close pane, `c` new window,
   `n`/`p` next/previous window. Mouse is on, so tapping a pane focuses it.
 - Omarchy's Alt-based shortcuts (Alt+Enter to split, Alt+1..9 for windows) need a hardware keyboard.
+- `ff` finds a file with a bat preview; `eff` opens the one you pick in `$EDITOR`: yours if set, otherwise
+  the first of nvim, vim, nano and vi that is installed.
 
 ## Tiling next to another app
 
@@ -56,5 +67,6 @@ notes app. Terminal in one tile, any app in the other, tmux panes inside the ter
 
 ## Not included
 
-- **btop**: Omarchy's screenshots show it, but I found no `btop` recipe in the Termux package repo.
+- **btop**: Omarchy's screenshots show it, but Termux packages it only in its root repository
+  (`root-packages/btop`), which holds "programs for rooted devices".
 - **Hyprland, Waybar, Walker, Mako**: desktop Wayland tools; not applicable on Android.
