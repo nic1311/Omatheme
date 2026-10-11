@@ -20,9 +20,13 @@ _Research current as of 2026-10-11. Samsung changes these things often._
 
 ### Tiled app windows
 
-- Samsung split screen is two apps (plus a pop-up window); One UI 8 lets you drag the split to 90/10
+- Samsung split screen is two apps (plus a pop-up window, but not both at once); One UI 8 lets you drag the
+  split to 90/10
   ([Droid-Life](https://www.droid-life.com/2025/05/28/samsung-upgrades-split-screen-in-one-ui-8-update/)).
-  I found no official figure for a larger limit on the S25.
+  I found no official figure for a larger limit on the S25. On One UI 9 the swipe gestures for split screen and
+  pop-up view are reportedly off by default
+  ([SamMobile](https://www.sammobile.com/news/must-try-multitasking-gestures-galaxy-z-fold-8-ultra/), a Z Fold 8
+  guide).
 - Hyprland-style tiling managers for Android exist but ship as APKs: for example
   [android-tiling-wm](https://github.com/Aypex/android-tiling-wm), a proof of concept tested on one Pixel
   that warns about small phone screens, and [DroidOS](https://github.com/aloim/droidos), aimed at
@@ -33,8 +37,11 @@ _Research current as of 2026-10-11. Samsung changes these things often._
 
 ### A Waybar-style top bar
 
-One UI does not let you move or restyle the status bar without Good Lock's QuickStar, whose One UI 9
-status I could not confirm. Not attempted.
+One UI does not let you rearrange the status bar by itself. Good Lock's QuickStar can hide status icons and,
+per a third-party guide, move the clock to the right
+([Guiding Tech](https://www.guidingtech.com/change-status-bar-clock-position-on-samsung-phone/)); I found no
+centered-clock option, which is what Omarchy's bar has, and I could not confirm QuickStar's status on One UI 9.
+Not attempted.
 
 ## Verified (in a cloud sandbox, 2026-10-11)
 

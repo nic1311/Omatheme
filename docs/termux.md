@@ -17,8 +17,6 @@ shell aliases. It is also where "tiles" work for real: tmux panes.
    bash termux/setup.sh            # add --nvim for Neovim with tokyonight-night
    ```
 
-   If the repo is private, `git clone` needs a GitHub token; alternatively download the ZIP in the
-   browser, run `termux-setup-storage`, and `unzip` it from `~/storage/downloads`.
 3. Close and reopen Termux, then type `t` to start tmux.
 
 If a command is missing or crashes after the install, run `pkg upgrade` once (Termux does not support

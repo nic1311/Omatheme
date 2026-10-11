@@ -19,6 +19,7 @@ Omarchy files are in <https://github.com/basecamp/omarchy> (master, read on 2026
 | Icons: `Yaru-magenta` | `themes/tokyo-night/icons.theme` | Theme Park monochrome `#ad8ee6`, or One UI's palette on app icons | ◐ |
 | Square windows with a thin focused border | `preview.png` | tmux pane borders; experimental Theme Park icon plates | ◐ |
 | Tiled windows | `preview.png` | Samsung split screen (two apps); tmux panes | ◐ |
+| Search-driven app launcher | n/a (not mapped to a file) | Samsung Finder, which One UI 9 lets you place above the dock | ◐ |
 | Top bar | `preview.png` | none (see [limits](limits.md)) | ❌ |
 | btop | `default/themed/btop.theme.tpl` | no btop recipe in the Termux repo | ❌ |
 | Keyboard backlight `ff00ff` | `themes/tokyo-night/keyboard.rgb` | no equivalent | ❌ |

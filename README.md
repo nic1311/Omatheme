@@ -2,6 +2,7 @@
 
 Make a Galaxy S25 look and feel as much like [Omarchy](https://omarchy.org)'s **Tokyo Night** theme as a
 stock, non-rooted phone allows, using **only apps from Google Play and Galaxy Store** (no APKs, no root).
+Written for **One UI 9**; most of it also applies to One UI 8.5.
 
 ![The four wallpapers: dusk, city, lock, solid](docs/preview.jpg)
 
@@ -22,6 +23,7 @@ stock, non-rooted phone allows, using **only apps from Google Play and Galaxy St
 | Tokyo Night colors | ✅ wallpaper + One UI *Color palette* + Theme Park manual colors |
 | JetBrains Mono everywhere | ❌ system-wide: Samsung's March 2026 patch only accepts Galaxy-Store-signed fonts, and the workarounds are APK-only. ✅ in Termux (same font family as Omarchy's terminals) |
 | Tiled windows | ◐ two tiles with Samsung split screen or app pairs; tmux panes in Termux. No tiling window manager is installable from the stores |
+| Search-driven launcher | ◐ Samsung Finder above the dock (a One UI 9 option) |
 | Square, thin-bordered tiles | ◐ experimental Theme Park icon plates |
 | Waybar-style top bar | ❌ |
 
@@ -31,6 +33,13 @@ Why, with sources: [docs/limits.md](docs/limits.md). Element-by-element: [docs/o
 > lists exactly what was verified and what wasn't; Samsung's menu names may differ slightly on your build.
 
 ## Setup (about 20 minutes)
+
+### 0. Update first
+
+Finish the One UI 9 update before theming. Then open Good Lock → **Apps** tab → **Update All**: Samsung advises
+updating Good Lock and its modules on One UI 9, since some need new builds
+([Sammy Fans](https://www.sammyfans.com/2026/10/08/samsung-advises-you-to-update-good-lock-modules-on-one-ui-9/)).
+I couldn't confirm whether a major update keeps a theme applied beforehand, so theming afterwards is the safe order.
 
 ### 1. Get the files onto the phone
 
@@ -46,15 +55,22 @@ sheet) and use **Download**. The Termux part clones the repo itself (step 4).
 3. **Settings → Wallpaper and style → Color palette → on.** One UI derives palettes from the wallpaper.
    Pick the violet/blue one closest to the swatch sheet, tap Apply, then switch on
    **Apply palette to app icons** ([Samsung's steps](https://www.samsung.com/us/support/answer/ANS10001905/)).
+   I found no reports that One UI 9 changed these screens.
 4. If the wallpaper looks darker than the preview, look for a "dim wallpaper in dark mode" option under
    Wallpaper and style or Display → Dark mode (its name varies by One UI version) and turn it off.
-5. Optional: **Settings → Home screen → App and widget style** to hide app labels for a cleaner look.
+5. If the lock screen clock moves or shrinks around the wallpaper's shapes (the adaptive clock that
+   [One UI 8.5 extended to all objects](https://www.sammobile.com/news/one-ui-8-5-adaptive-lock-screen-clock-works-all-objects/)):
+   long-press the lock screen → tap the clock → Font and color → choose the non-adaptive option.
+6. Optional: **Settings → Home screen → App and widget style** to hide app labels for a cleaner look. One UI 9
+   also lets you choose what sits above the dock (Google Search, Samsung Finder, both or neither,
+   [per One UI 9 coverage](https://www.bgr.com/2278465/samsung-phone-new-features-one-ui-9/)); Finder is the
+   nearest stock thing to Omarchy's search-driven launcher.
 
 ### 3. Theme Park for exact colors (Galaxy Store)
 
 Galaxy Store → **Good Lock** → install, open it, install **Theme Park** (and optionally **MultiStar** for
-multi-window options). Update all modules first. Then follow [docs/theme-park.md](docs/theme-park.md): it has
-the Tokyo Night value for the Quick Panel, icons, keyboard and volume panel.
+multi-window options), then **Update All** if you haven't. Follow [docs/theme-park.md](docs/theme-park.md): it
+has the Tokyo Night value for the Quick Panel, icons, keyboard and volume panel.
 
 ### 4. A terminal that looks like Omarchy's (Google Play)
 
@@ -70,6 +86,10 @@ Close and reopen Termux and type `t`. Details, undo and troubleshooting: [docs/t
 
 ### 5. Tiles
 
+- **Turn on the gestures.** Settings → Advanced features → Multi Window → swipe for split screen / swipe for
+  pop-up view. Reports say these are off by default on One UI 9 unless settings were imported with Smart Switch
+  ([SamMobile](https://www.sammobile.com/news/must-try-multitasking-gestures-galaxy-z-fold-8-ultra/); that guide
+  is for the Z Fold 8, so labels on your S25 may differ). Split screen and pop-up view can't run together.
 - **Two apps:** open Termux, then Recents → tap its icon → **Open in split screen view** → choose the second
   app. In split view, the divider handle offers to add the pair to your Home screen as an app pair (wording
   varies by version).
@@ -85,4 +105,4 @@ pip install materialyoucolor && python tools/verify.py
 ```
 
 `tools/generate.py --theme path/to/colors.toml` accepts any Omarchy theme's `colors.toml`, though the scene
-colors were tuned for Tokyo Night. Credits and licenses: [NOTICE.md](NOTICE.md).
+colors were tuned for Tokyo Night. Credits and third-party licenses: [NOTICE.md](NOTICE.md).

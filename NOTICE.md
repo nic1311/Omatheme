@@ -1,7 +1,7 @@
 # Third-party material
 
 This repo adapts and bundles a few small pieces of other people's work. The repo's own code and
-generated artwork have no license assigned yet (the owner can add one).
+generated artwork carry no license, by the owner's choice. The third-party material below keeps its own terms.
 
 ## Omarchy (MIT)
 

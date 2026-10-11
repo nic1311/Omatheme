@@ -5,12 +5,21 @@ It builds a palette from your wallpaper, lets you override colors by hand, and r
 Panel, volume panel, keyboard and icons ([SamMobile](https://www.sammobile.com/news/update-good-lock-theme-park-six-new-features/),
 [Sammy Fans](https://www.sammyfans.com/2025/12/15/samsung-theme-park-features-skyrocket-in-one-ui-8-5/)).
 
-**Before you start:** open Good Lock and update all modules. Samsung advises this on One UI 9
+**Before you start:** after the One UI 9 update, open Good Lock → Apps → **Update All**. Samsung advises this
+because some modules need new builds
 ([Sammy Fans](https://www.sammyfans.com/2026/10/08/samsung-advises-you-to-update-good-lock-modules-on-one-ui-9/)).
-Theme Park and Keys Cafe were on Samsung's One UI 9 compatibility list from the start; some other modules
-(QuickStar, LockStar, NavStar) were still being ported when last reported, so check Good Lock's own list
-([Android Authority](https://www.androidauthority.com/one-ui-9-good-lock-compatibility-3668756/),
-[SamMobile](https://www.sammobile.com/news/samsung-reveals-which-good-lock-modules-work-with-one-ui-9-0/)).
+
+**Which modules work on One UI 9:** Theme Park and Keys Cafe were on Samsung's One UI 9 compatibility list from
+the start; MultiStar was added in June
+([Sammy Fans](https://www.sammyfans.com/2026/06/11/samsung-one-ui-9-multistar-good-lock-modules/)). Samsung's
+first list ([SamMobile](https://www.sammobile.com/news/samsung-reveals-which-good-lock-modules-work-with-one-ui-9-0/),
+[Android Authority](https://www.androidauthority.com/one-ui-9-good-lock-compatibility-3668756/)) had ClockFace,
+LockStar, NavStar and QuickStar still in progress; later reports say several of them gained support, and I
+found no confirmation for QuickStar. Good Lock's own module list is the authority.
+
+**One UI 9 redesigned the Quick Panel** (thicker sliders, tiles without borders, more of it editable natively,
+per One UI 9 coverage such as [BGR](https://www.bgr.com/2278465/samsung-phone-new-features-one-ui-9/)), so
+Theme Park's Quick Panel options may not match the table below exactly. Match by function.
 
 ## About these values
 
