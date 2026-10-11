@@ -71,28 +71,60 @@ backup_file() { # copy an existing file into this run's backup folder, keeping i
   say "backed up $src -> $dest"
 }
 
-remember_original() { # the first time a path is touched, keep what was there (or note that nothing was)
-  local orig
-  orig="$orig_dir/$(rel "$1")"
+legacy_backup() { # dst: the oldest copy of dst saved by this script's first version, which stored backups flat,
+  # named after the full path with "/" turned into "_" (the timestamped folders sort oldest first)
+  local flat dir
+  flat="$(printf '%s' "$1" | tr '/' '_')"
+  for dir in "$backup_root"/2*/; do
+    if [[ -f "$dir$flat" ]]; then printf '%s' "$dir$flat"; return 0; fi
+  done
+  return 1
+}
+
+is_kit_copy() { # dst src: is dst the kit's src file, either as it is now or as committed in any earlier version?
+  local dst="$1" name blob commit
+  [[ -f "$dst" ]] || return 1
+  cmp -s "$dst" "$2" && return 0
+  command -v git &>/dev/null || return 1
+  name="$(basename "$2")"
+  blob="$(git hash-object --stdin < "$dst")" || return 1
+  while read -r commit; do
+    [[ "$(git -C "$here" rev-parse --quiet --verify "$commit:./$name" 2>/dev/null)" == "$blob" ]] && return 0
+  done < <(git -C "$here" log --format=%H -- "$name" 2>/dev/null)
+  return 1
+}
+
+remember_original() { # dst src: the first time dst is touched, keep what was there (or note that nothing was)
+  local dst="$1" orig flat
+  orig="$orig_dir/$(rel "$dst")"
   [[ -e "$orig" || -e "$orig.absent" ]] && return 0
   mkdir -p "$(dirname "$orig")"
-  if [[ -e "$1" ]]; then cp -p "$1" "$orig"; else : > "$orig.absent"; fi
+  if is_kit_copy "$dst" "$2"; then # an earlier version put it there; what the user had is in its backups
+    if flat="$(legacy_backup "$dst")"; then cp -p "$flat" "$orig"; else : > "$orig.absent"; fi
+  elif [[ -e "$dst" ]]; then
+    cp -p "$dst" "$orig"
+  else
+    : > "$orig.absent"
+  fi
 }
 
 install_file() { # src dst
   local src="$1" dst="$2"
-  remember_original "$dst"
+  remember_original "$dst" "$src"
   mkdir -p "$(dirname "$dst")"
   if [[ -e "$dst" ]] && ! cmp -s "$src" "$dst"; then backup_file "$dst"; fi
   install -m 0644 "$src" "$dst"
 }
 
 restore_original() { # put back what was at dst before the first install, or remove dst if nothing was
-  local dst="$1" orig
+  local dst="$1" orig flat
   orig="$orig_dir/$(rel "$dst")"
   if [[ -e "$orig" ]]; then
     mkdir -p "$(dirname "$dst")"
     mv -f "$orig" "$dst"
+    say "restored your original $dst"
+  elif [[ ! -e "$orig.absent" ]] && flat="$(legacy_backup "$dst")"; then # installed by the first version
+    cp -p "$flat" "$dst"
     say "restored your original $dst"
   elif [[ -e "$dst" ]]; then
     rm -f "$dst"
@@ -101,10 +133,10 @@ restore_original() { # put back what was at dst before the first install, or rem
   rm -f "$orig.absent"
 }
 
-uninstall_file() { # ours dst: undo one installed file, unless it was changed after install
-  local ours="$1" dst="$2" orig
+uninstall_file() { # src dst: undo one installed file, unless it was changed after install
+  local src="$1" dst="$2" orig
   orig="$orig_dir/$(rel "$dst")"
-  if [[ -e "$dst" ]] && cmp -s "$ours" "$dst"; then
+  if is_kit_copy "$dst" "$src"; then
     restore_original "$dst"
   elif [[ -e "$orig" || -e "$orig.absent" ]]; then # installed by us, then changed or deleted
     if [[ -e "$dst" ]]; then
@@ -224,6 +256,8 @@ if [[ "$mode" == uninstall ]]; then
     restore_original "$font_dst"
   elif [[ -e "$font_sum" && -e "$font_dst" ]]; then
     warn "kept $font_dst: it changed since install"
+  elif [[ -e "$font_dst" ]] && font_was="$(legacy_backup "$font_dst")"; then # first version, which kept no checksum
+    warn "kept $font_dst; the font you had before the first install is $font_was"
   fi
   rm -f "$font_sum"
   reload

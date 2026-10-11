@@ -48,7 +48,9 @@ had before the first install, and deletes the ones it created. The font goes bac
 default if you had none. A file you changed after installing is kept, and the script tells you where your
 original is, if you had one. If the omatheme marker lines in `~/.bashrc` no longer form one begin/end pair,
 install and uninstall both stop without changing anything and say which marker lines to fix. The backups
-stay in `~/.omatheme-backup`; delete that folder when you no longer need them.
+stay in `~/.omatheme-backup`; delete that folder when you no longer need them. Undo also works after a
+`git pull` and over an install made by the kit's first version: files it installed are recognized from the
+clone's git history, and your originals from that version's backups.
 
 ## Using it
 

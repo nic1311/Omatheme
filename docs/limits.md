@@ -80,10 +80,10 @@ Replacing One UI Home with a store launcher was researched and left out of the k
   termux-app's source, including the `{macro: ...}` extra-keys syntax.
 - `termux/tmux.conf` loads in a real tmux (3.4 here). The only rejected option is `extended-keys-format`,
   added in tmux 3.5; Termux ships 3.8.
-- `termux/setup.sh`: shellcheck-clean; 40 checks in a throwaway home directory with a stubbed `pkg` and the
+- `termux/setup.sh`: shellcheck-clean; 59 checks in a throwaway home directory with a stubbed `pkg` and the
   real font download: install over existing files, re-run, byte-for-byte restore on uninstall, edited files
-  kept, broken `.bashrc` markers refused, `--nvim`, and `--export-font` with storage granted, granted late
-  and refused.
+  kept, broken `.bashrc` markers refused, `--nvim`, `--export-font` with storage granted, granted late and
+  refused, and upgrades: over an install made by the kit's first version, and uninstall after a `git pull`.
 - `termux/omarchy.sh`, in bash with stub tools: `eff` opens the picked file in the editor and, with no editor
   installed, refuses instead of running the file; the zoxide `cd` jump also works when `TERM=dumb`.
 - `termux/nvim-init.lua`, in Neovim 0.9.5: installs lazy.nvim and tokyonight.nvim and ends with
