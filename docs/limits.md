@@ -93,15 +93,16 @@ Replacing One UI Home with a store launcher was researched and left out of the k
   [kwgt.md](kwgt.md), and that free KWGT can build a widget from scratch.
 - Wallpapers (`tools/verify.py`): exact 1440x3120, white-text contrast over typical icon-grid, dock and
   status-bar zones, and Material You seed extraction after the same 112x112-area downscale Android's
-  `WallpaperColors` applies (still a proxy; see below).
+  `WallpaperColors` applies (still a proxy; see below). It fails if any seed is red, coral or orange: Omarchy's
+  Tokyo Night desktop is navy, blue, violet and pink, and its reds are only terminal colors.
 
 ## Not verified
 
 - **Anything on a physical S25.** Samsung menu paths and labels, Theme Park's controls (hex entry,
   custom shape images), how Termux's Play build behaves, and how the font and colors actually render.
 - **One UI's own Color palette algorithm** is closed. `verify.py` runs Google's Material algorithm on each
-  wallpaper as a stand-in; every wallpaper yields at least one seed near Tokyo Night's blue/violet/navy,
-  but One UI's picker may offer different swatches.
+  wallpaper as a stand-in; every wallpaper yields at least one seed near Tokyo Night's blue/violet/navy and
+  none in the red/orange range, but One UI's picker may offer different swatches.
 - **Zone positions** (icon grid 12-78% of the height, dock below 88%) are typical One UI home layouts, not
   measurements of yours.
 - **The square-plate trick** for Theme Park icons (see [theme-park.md](theme-park.md)).

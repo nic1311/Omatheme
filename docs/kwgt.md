@@ -89,8 +89,9 @@ formula `$if(bi(charging)=1, Always, Never)$`, which shows only while charging
 `$if(bi(charging)=1, charging, discharging)$` in `#a9b1d6`. For the bar, draw a `#292e42` rectangle as the track and a
 `#9ece6a` one on top whose width is a formula of the battery level. If you find Kustom's Progress layer, use that.
 
-**Palette tile** (4x1, border `#414868`): `tokyo-night` in `#c0caf5` bold, `omarchy colors` in `#565f89`, and seven
-small squares: `#f7768e`, `#e0af68`, `#9ece6a`, `#449dab`, `#7aa2f7`, `#ad8ee6`, `#c0caf5`.
+**Palette tile** (4x1, border `#414868`): `tokyo-night` in `#c0caf5` bold, `omarchy colors` in `#565f89`, and six
+small squares in the desktop colors: `#7aa2f7`, `#ad8ee6`, `#449dab`, `#0db9d7`, `#414868`, `#c0caf5`. (Red, orange
+and yellow are Omarchy's terminal colors, not part of its desktop look.)
 
 ## 4. Notes
 

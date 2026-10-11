@@ -123,17 +123,28 @@ def lock(p: Palette, w: int = W, h: int = H) -> Image.Image:
     return c.to_image(seed=11)
 
 
+def _pinks(p: Palette) -> tuple[float, float]:
+    """Hues for the warm end of the sky: a soft pink and a hot pink, both between violet and red.
+
+    The hot pink sits where Omarchy's own Tokyo Night pink does (its lock screen glow, #ff54d6, is about
+    60% of the way from bright_magenta to bright_red), so the sunsets read pink and magenta, never red
+    or orange: those palette colors are terminal colors, not part of the desktop look.
+    """
+    h_violet, h_red = hue_of(p["bright_magenta"]), hue_of(p["bright_red"])
+    return hue_lerp(h_violet, h_red, 0.40), hue_lerp(h_violet, h_red, 0.60)
+
+
 def dusk(p: Palette, w: int = W, h: int = H, seed: int = 7) -> Image.Image:
     """Layered ridges under a haloed setting sun, in the spirit of Omarchy's sunset backgrounds.
 
-    Hues come from the palette (navy -> violet -> rose -> sun); lightness and chroma are set by
-    design so the sky stays vivid yet dark enough for white app labels to stay readable.
+    Hues come from the palette (navy -> violet -> pink); lightness and chroma are set by design so
+    the sky stays vivid yet dark enough for white app labels to stay readable.
     """
     rng = np.random.default_rng(seed)
-    night, ink = p["background"], p["darker_background"]
-    violet, rose, sun = p["bright_magenta"], p["bright_red"], p["bright_yellow"]
-    h_night, h_violet, h_rose, h_sun = (hue_of(night), hue_of(violet), hue_of(rose), hue_of(sun))
-    h_pink = hue_lerp(h_violet, h_rose, 0.5)  # halfway from violet to rose
+    night, ink, violet = p["background"], p["darker_background"], p["bright_magenta"]
+    h_night, h_violet = hue_of(night), hue_of(violet)
+    h_pink, h_rose = _pinks(p)
+    rose = tint(violet, hue=h_rose)
 
     # The bright band sits below the app grid (~80% of the screen) and above the dock, so white
     # labels keep their contrast; verify.py checks this.
@@ -147,8 +158,8 @@ def dusk(p: Palette, w: int = W, h: int = H, seed: int = 7) -> Image.Image:
         (0.55 * k, tint(violet, L=0.400, C=0.160, hue=h_violet + 16)),
         (0.68 * k, tint(violet, L=0.520, C=0.185, hue=h_pink)),
         (0.74 * k, tint(rose, L=0.640, C=0.180)),
-        (horizon, tint(sun, L=0.760, C=0.150, hue=h_sun - 12)),
-        (1.00, tint(sun, L=0.760, C=0.150, hue=h_sun - 12)),
+        (horizon, tint(rose, L=0.780, C=0.120)),
+        (1.00, tint(rose, L=0.780, C=0.120)),
     ]
     c = Canvas(w, h).vgradient(sky)
 
@@ -160,10 +171,10 @@ def dusk(p: Palette, w: int = W, h: int = H, seed: int = 7) -> Image.Image:
     disc = Shapes(w, h).ellipse(sx, sy, w * 0.085).mask()
     c.glow(disc, glow_rose, 80.0, 1.0)
     c.glow(disc, glow_rose, 340.0, 0.8)
-    ring_color = tint(sun, L=0.80, C=0.12)
+    ring_color = tint(rose, L=0.82, C=0.10)
     for radius, alpha in ((0.32, 0.045), (0.24, 0.065), (0.17, 0.095), (0.12, 0.14)):
         c.paint(ring_color, Shapes(w, h).ellipse(sx, sy, w * radius).mask(), alpha)
-    c.paint(tint(sun, L=0.94, C=0.06), disc)
+    c.paint(tint(rose, L=0.95, C=0.045), disc)
 
     # ridges: far -> near; each is a vertical gradient (lit crest, darker base)
     ys = np.arange(h) + 0.5
@@ -196,9 +207,10 @@ def city(p: Palette, w: int = W, h: int = H, seed: int = 21) -> Image.Image:
     """A neon skyline under a pink-clouded night sky: the 'Tokyo night' of the theme's name."""
     rng = np.random.default_rng(seed)
     night, ink = p["background"], p["darker_background"]
-    violet, rose, sun, blue = p["bright_magenta"], p["bright_red"], p["bright_yellow"], p["blue"]
-    h_night, h_violet, h_rose = hue_of(night), hue_of(violet), hue_of(rose)
-    h_pink = hue_lerp(h_violet, h_rose, 0.5)
+    violet, blue = p["bright_magenta"], p["blue"]
+    h_night, h_violet = hue_of(night), hue_of(violet)
+    h_pink, h_rose = _pinks(p)
+    rose = tint(violet, hue=h_rose)
 
     sky = [
         (0.00, tint(night, L=0.160, C=0.022)),
@@ -255,8 +267,9 @@ def city(p: Palette, w: int = W, h: int = H, seed: int = 21) -> Image.Image:
 
     # skyline: three depth layers of rectangular towers with lit windows
     ground = int(h * 0.905)
-    lit_colors = [tint(p["yellow"], L=0.86, C=0.12), tint(sun, L=0.80, C=0.14), tint(p["bright_cyan"], L=0.80, C=0.11),
-                  tint(rose, L=0.78, C=0.14), tint(p["bright_foreground"], L=0.90, C=0.05)]
+    lit_colors = [tint(p["yellow"], L=0.86, C=0.12), tint(p["yellow"], L=0.80, C=0.09),
+                  tint(p["bright_cyan"], L=0.80, C=0.11), tint(rose, L=0.78, C=0.14),
+                  tint(p["bright_foreground"], L=0.90, C=0.05)]
     lit_weights = np.array([0.42, 0.20, 0.16, 0.10, 0.12])
     emissive = np.zeros((h, w, 3), np.float32)
     layers = [  # width range, height range (frac of h), cell (w, h), lit prob range, body, window scale
@@ -281,7 +294,7 @@ def city(p: Palette, w: int = W, h: int = H, seed: int = 21) -> Image.Image:
                 x0, x1 = max(tx, 0), min(tx + tw, w)
                 if x1 > x0:
                     c.px[max(ty, 0):tb, x0:x1] = body_lin
-            if li == 2 and rng.random() < 0.30 and bw > 80:  # antenna with a red aviation light
+            if li == 2 and rng.random() < 0.30 and bw > 80:  # antenna with a pink aviation light
                 ax, ah = x + bw // 2, int(rng.uniform(0.02, 0.05) * h)
                 c.px[max(top - ah, 0):top, max(ax - 2, 0):ax + 2] = body_lin
                 rims.append((ax - 2, top - ah, top))
@@ -354,43 +367,55 @@ def _font(weight: str, size: int) -> ImageFont.FreeTypeFont:
 def palette_card(p: Palette, w: int = 1080, h: int = 2340) -> Image.Image:
     """A phone-sized swatch sheet: compare it against One UI's color pickers.
 
-    Every color in the palette appears once; keys that repeat another key's value (Tokyo Night's
-    ``blue`` equals its ``accent``) are shown under the first name only.
+    The desktop look (surfaces, text, accents) gets large tiles. The rest of the terminal palette
+    (red, orange, yellow, green, brown) gets small ones under its own heading: Omarchy uses those for
+    terminal output such as errors and git diffs, not for the look of the desktop. Every color appears
+    once; keys that repeat another key's value (Tokyo Night's ``blue`` equals its ``accent``) are shown
+    under the first name only.
     """
-    pad, gap, cols, tile_h = 48, 14, 2, 108
-    groups = [
+    pad, gap = 48, 14
+    groups = [  # title, keys, columns, tile height, caption
         ("surfaces", ["background", "lighter_background", "dark_background", "darker_background",
-                      "selection", "muted"]),
-        ("text", ["foreground", "bright_foreground", "light_foreground", "dark_foreground"]),
-        ("accents", ["accent", "blue", "bright_blue", "magenta", "bright_magenta", "cyan", "bright_cyan",
-                     "green", "bright_green", "yellow", "bright_yellow", "orange", "red", "bright_red"]),
+                      "selection", "muted"], 2, 108, None),
+        ("text", ["foreground", "bright_foreground", "light_foreground", "dark_foreground"], 2, 108, None),
+        ("accents", ["accent", "blue", "bright_blue", "magenta", "bright_magenta", "cyan", "bright_cyan"],
+         2, 108, None),
+        ("terminal colors", ["red", "bright_red", "orange", "brown", "yellow", "bright_yellow", "green",
+                             "bright_green"], 4, 76, "terminal output only (errors, git diffs), not the desktop look"),
     ]
-    known = {k for _, ks in groups for k in ks}
-    groups.append(("other", [k for k in p if k not in known]))
+    known = {k for _, ks, *_ in groups for k in ks}
+    groups.append(("other", [k for k in p if k not in known], 4, 76, None))
     seen, shown = set(), []
-    for title, keys in groups:
+    for title, keys, cols, tile_h, caption in groups:
         keep = []
         for key in keys:
             if key in p and p[key] not in seen:
                 seen.add(p[key])
                 keep.append(key)
         if keep:
-            shown.append((title, keep))
+            shown.append((title, keep, cols, tile_h, caption))
 
-    def rows(keys):
+    def rows(keys, cols):
         return (len(keys) + cols - 1) // cols
 
-    needed = 220 + sum(52 + rows(keys) * (tile_h + gap) + 26 for _, keys in shown) + pad
+    def height(keys, cols, tile_h, caption):
+        return 52 + (40 if caption else 0) + rows(keys, cols) * (tile_h + gap) + 26
+
+    needed = 220 + sum(height(*g[1:]) for g in shown) + pad
     img = Image.new("RGB", (w, max(h, needed)), p["background"])
     d = ImageDraw.Draw(img)
     d.text((pad, 70), p.name, font=_font("Bold", 64), fill=p["bright_foreground"])
     d.text((pad, 150), "Omarchy colors.toml", font=_font("Regular", 30), fill=p["dark_foreground"])
 
-    tile_w = (w - 2 * pad - gap * (cols - 1)) // cols
     y = 220
-    for title, keys in shown:
+    for title, keys, cols, tile_h, caption in shown:
         d.text((pad, y), title, font=_font("Bold", 30), fill=p["foreground"])
         y += 52
+        if caption:
+            d.text((pad, y - 8), caption, font=_font("Regular", 24), fill=p["dark_foreground"])
+            y += 40
+        small = cols > 2
+        tile_w = (w - 2 * pad - gap * (cols - 1)) // cols
         for i, key in enumerate(keys):
             x = pad + (i % cols) * (tile_w + gap)
             yy = y + (i // cols) * (tile_h + gap)
@@ -399,9 +424,13 @@ def palette_card(p: Palette, w: int = 1080, h: int = 2340) -> Image.Image:
             d.rectangle([x, yy, x + tile_w - 1, yy + tile_h - 1], fill=fill,
                         outline=p["accent"] if focused else p["muted"], width=3)
             ink = max((p["background"], p["bright_foreground"]), key=lambda c: contrast(fill, c))
-            d.text((x + 20, yy + 12), key, font=_font("Regular", 26), fill=ink)
-            d.text((x + 20, yy + 48), rgb_to_hex(fill), font=_font("Bold", 44), fill=ink)
-        y += rows(keys) * (tile_h + gap) + 26
+            if small:
+                d.text((x + 14, yy + 9), key, font=_font("Regular", 19), fill=ink)
+                d.text((x + 14, yy + 34), rgb_to_hex(fill), font=_font("Bold", 28), fill=ink)
+            else:
+                d.text((x + 20, yy + 12), key, font=_font("Regular", 26), fill=ink)
+                d.text((x + 20, yy + 48), rgb_to_hex(fill), font=_font("Bold", 44), fill=ink)
+        y += rows(keys, cols) * (tile_h + gap) + 26
     return img
 
 
@@ -483,7 +512,8 @@ def kwgt_mockup(p: Palette, w: int = 1080, h: int = 2340, background: Image.Imag
     tile(left, 614, right, 790, p["muted"])
     d.text((left + 26, 668), p.name, font=_font("Bold", 40), fill=p["bright_foreground"], anchor="lm")
     d.text((left + 26, 722), "omarchy colors", font=label, fill=p["dark_foreground"], anchor="lm")
-    swatches = ["red", "yellow", "green", "cyan", "blue", "magenta", "bright_foreground"]
+    # the desktop look's colors; red, orange and the other terminal-only colors stay off the home screen
+    swatches = ["accent", "magenta", "cyan", "bright_cyan", "muted", "bright_foreground"]
     size, gap = 52, 14
     sx = right - 26 - (len(swatches) * size + (len(swatches) - 1) * gap)
     for i, key in enumerate(swatches):

@@ -29,6 +29,12 @@ HOME_ZONES = {"status bar": (0.0, 0.036), "icon grid": (0.12, 0.78), "dock": (0.
 LOCK_ZONES = {"status bar": (0.0, 0.036), "clock + notifications": (0.04, 0.50)}
 ZONES = {"dusk": HOME_ZONES, "city": HOME_ZONES, "solid": HOME_ZONES, "lock": LOCK_ZONES}
 
+# Omarchy's Tokyo Night desktop is navy, blue, violet and pink; red, orange and coral are only terminal
+# colors. A seed in this HCT hue band (with real chroma) would let One UI offer a red palette, so it fails.
+# Pinks and magentas, such as Omarchy's own lock-screen glow #ff54d6 (hue 343), stay below 350.
+RED_HUES = (350.0, 50.0)  # wraps through 0
+RED_MIN_CHROMA = 20.0
+
 MAX_FRACTION_BELOW_3_TO_1 = 0.02  # at most 2% of a zone may fall under WCAG's 3:1 for large text/icons
 
 
@@ -104,8 +110,11 @@ def main() -> int:
             for argb, hue, chroma, tone in found:
                 gap = min((hue_gap(hue, a) for a in anchors.values()), default=999)
                 near |= gap <= 30
+                red = (hue >= RED_HUES[0] or hue <= RED_HUES[1]) and chroma >= RED_MIN_CHROMA
+                failed |= red
+                label = "FAIL: red/orange" if red else "near Tokyo Night" if gap <= 30 else ""
                 print(f"  seed      #{argb & 0xFFFFFF:06x}  hue {hue:5.1f}  chroma {chroma:5.1f}  tone {tone:5.1f}"
-                      f"   {'near Tokyo Night' if gap <= 30 else ''}")
+                      f"   {label}")
             note = ("at least one seed within 30 deg of Tokyo Night blue/violet/navy" if near
                     else "WARN: no seed near Tokyo Night hues")
             print(f"  palette   {note}")
