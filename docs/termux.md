@@ -2,7 +2,7 @@
 
 Gives you a terminal that looks like Omarchy's: Tokyo Night colors, **JetBrainsMono Nerd Font Mono**
 (Omarchy's terminal font family), a steady block cursor, and Omarchy's own tmux, starship prompt and
-shell aliases. It is also where "tiles" work for real: tmux panes.
+shell aliases. If you want tiles, tmux panes give you them inside the terminal.
 
 ## Install
 
@@ -62,7 +62,7 @@ clone's git history, and your originals from that version's backups.
 - `ff` finds a file with a bat preview; `eff` opens the one you pick in `$EDITOR`: yours if set, otherwise
   the first of nvim, vim, nano and vi that is installed.
 
-## Tiling next to another app
+## Tiling next to another app (optional)
 
 Open Termux, then Recents → tap Termux's icon → **Open in split screen view** → pick a browser, chat or
 notes app. Terminal in one tile, any app in the other, tmux panes inside the terminal tile.

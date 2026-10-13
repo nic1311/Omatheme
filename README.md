@@ -69,9 +69,9 @@ sheet) and use **Download**. The Termux part clones the repo itself (step 4).
 
 ### 3. Theme Park for exact colors (Galaxy Store)
 
-Galaxy Store → **Good Lock** → install, open it, install **Theme Park** (and optionally **MultiStar** for
-multi-window options), then **Update All** if you haven't. Follow [docs/theme-park.md](docs/theme-park.md): it
-has the Tokyo Night value for the Quick Panel, icons, keyboard and volume panel.
+Galaxy Store → **Good Lock** → install, open it, install **Theme Park**, then **Update All** if you haven't.
+Follow [docs/theme-park.md](docs/theme-park.md): it has the Tokyo Night value for the Quick Panel, icons,
+keyboard and volume panel.
 
 ### 4. A terminal that looks like Omarchy's (Google Play)
 
@@ -85,7 +85,16 @@ cd Omatheme && bash termux/setup.sh
 
 Close and reopen Termux and type `t`. Details, undo and troubleshooting: [docs/termux.md](docs/termux.md).
 
-### 5. Tiles
+### 5. Home screen bar and tiles (Google Play)
+
+Install **KWGT** (Kustom Widget Maker). Do step 4 first: it clones this repo, and then
+`bash ~/Omatheme/termux/setup.sh --export-font` in Termux saves the font to Downloads. Build the widgets from
+[docs/kwgt.md](docs/kwgt.md). Your launcher stays One UI Home. Building from scratch is free; there is no preset
+file because importing one needs Kustom's paid Pro key. Skip this step for a plain One UI home screen.
+
+### 6. Optional: more than one app on screen
+
+Everything above works without this. It only adds tiles:
 
 - **Turn on the gestures.** Settings → Advanced features → Multi Window → swipe for split screen / swipe for
   pop-up view. Reports say these are off by default on One UI 9 unless settings were imported with Smart Switch
@@ -95,12 +104,7 @@ Close and reopen Termux and type `t`. Details, undo and troubleshooting: [docs/t
   app. In split view, the divider handle offers to add the pair to your Home screen as an app pair (wording
   varies by version).
 - **More tiles:** inside Termux, tmux panes. The **PFX** key is Ctrl+Space, then `h` / `v` split and `x` closes.
-
-### 6. Home screen bar and tiles (optional, Google Play)
-
-Install **KWGT** (Kustom Widget Maker), run `bash ~/Omatheme/termux/setup.sh --export-font` in Termux to save the
-font to Downloads, and build the widgets from [docs/kwgt.md](docs/kwgt.md). Your launcher stays One UI Home.
-Building from scratch is free; there is no preset file because importing one needs Kustom's paid Pro key.
+- **More multi-window options:** install **MultiStar** from Good Lock.
 
 ## Rebuilding the assets
 
